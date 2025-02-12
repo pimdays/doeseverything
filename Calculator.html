@@ -14,6 +14,9 @@
         th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
         th { background-color: #f4f4f4; font-weight: bold; }
         tr:nth-child(even) { background-color: #ffffff; }
+	.donation-message { margin-top: 5px; font-size: 13px; font-weight: normal; color: #333; font-family: 	Times New Roman, Times New Roman; }
+        .random-image { width: 200px; height: 200px; margin-top: 10px; }
+	.qr-image { width: 100px; height: 100px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -56,6 +59,10 @@
             </thead>
             <tbody></tbody>
         </table>
+
+	<img id="randomImage" class="random-image" src="" alt="Random Image">
+	<div class="donation-message">สมทบทุนซื้อเปียกๆ เลี้ยงยูซุ</div>
+        <img src="qr.jpg" class="qr-image" alt="QR Image">
     </div>
 
     <script>
@@ -352,8 +359,13 @@ function calculateIncome() {
 
     document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
     document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
-}
+        }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            populateDropdown(document.querySelector(".routeDropdown"));
+            const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg", 	    	    "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
+            document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
+        });
 
         // Initialize first dropdown
         populateDropdown(document.querySelector(".routeDropdown"));
