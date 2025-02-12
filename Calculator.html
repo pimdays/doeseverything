@@ -33,6 +33,9 @@
             <option>2 Days SL</option>
             <option>2 Days in Hospital</option>
         </select>
+        <label for="includeCommission" style="margin-top: 10px; font-weight: bold; font-size: 16px; display: block;">
+            <input type="checkbox" id="includeCommission" checked> Include Commission
+        </label>
         
 	<button onclick="calculateIncome()" style="background-color: watermelon; color: white; border: none; 	padding: 10px; border-radius: 5px;">
     	Calculate
@@ -257,15 +260,37 @@
   'Block hours': 14.416666666666666}
         ];
 
-        function populateDropdown(dropdown) {
-            dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
-            dataArray.forEach(route => {
-                let option = document.createElement("option");
-                option.value = route.Routes;
-                option.textContent = route.Routes;
-                dropdown.appendChild(option);
-            });
-        }
+	function populateDropdown(dropdown) {
+    	dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
+
+    	// Grouping and sorting logic
+    	let group1 = []; // No suffix
+    	let group2 = []; // Ends with "2"
+    	let group3 = []; // Ends with "3"
+
+   	 dataArray.forEach(route => {
+   	     if (route.Routes.endsWith("2")) {
+   	         group2.push(route.Routes);
+        	} else if (route.Routes.endsWith("3")) {
+   	         group3.push(route.Routes);
+   	     } else {
+    	        group1.push(route.Routes);
+     		   }
+ 	   });
+
+	    // Sort each group alphabetically
+	    group1.sort();
+	    group2.sort();
+	    group3.sort();
+
+	    // Append to dropdown
+	    [...group1, ...group2, ...group3].forEach(route => {
+        	let option = document.createElement("option");
+	        option.value = route;
+	        option.textContent = route;
+	        dropdown.appendChild(option);
+    		});
+	}
 
         function addRouteDropdown(selectElement) {
             if (selectElement.value !== "") {
@@ -278,34 +303,57 @@
             }
         }
 
-        function calculateIncome() {
-            const selectedRoutes = [...document.querySelectorAll(".routeDropdown")].map(select => select.value).filter(val => val);
-            const sickLeave = document.getElementById("sickLeave").value;
-            const baseSalary = 12000;
-            const perRouteBonus = 500;
-            
-            let totalIncome = baseSalary;
-            let totalBlockHours = 0;
-            const tableBody = document.getElementById("incomeTable").querySelector("tbody");
-            tableBody.innerHTML = "";
-	    document.getElementById("incomeTable").style.display = "table";
-            
-            selectedRoutes.forEach(route => {
-                const selectedData = dataArray.find(r => r.Routes === route);
-                if (selectedData) {
-                    const routeIncome = selectedData[sickLeave] + perRouteBonus;
-                    totalIncome += routeIncome;
-                    totalBlockHours += selectedData["Block hours"];
-                    
-                    let row = document.createElement("tr");
-                    row.innerHTML = `<td>${route}</td><td>${routeIncome.toFixed(2)}</td><td>${selectedData["Block hours"].toFixed(2)}</td>`;
-                    tableBody.appendChild(row);
-                }
-            });
-            
-            document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
-            document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
+function calculateIncome() {
+    const selectedRoutes = [...document.querySelectorAll(".routeDropdown")].map(select => select.value).filter(val => val);
+    const sickLeave = document.getElementById("sickLeave").value;
+
+    let totalIncome = 12000;
+    let totalBlockHours = 0;
+    const tableBody = document.getElementById("incomeTable").querySelector("tbody");
+    tableBody.innerHTML = "";
+    document.getElementById("incomeTable").style.display = "table";
+
+    const sickLeaveMultiplier = {
+        "No SL": 105,
+        "1 Day SL": 85,
+        "2 Days SL": 0,
+        "2 Days in Hospital": 55
+    };
+
+    selectedRoutes.forEach(route => {
+        const selectedData = dataArray.find(r => r.Routes === route);
+        if (selectedData) {
+            const blockHours = selectedData["Block hours"];
+            const basePay = blockHours * 280;
+            const sickLeavePay = blockHours * sickLeaveMultiplier[sickLeave];
+            const sectorAllowance = 600;
+            const transportationAllowance = 600;
+            const includeCommission = document.getElementById("includeCommission").checked;
+	    const commission = includeCommission ? 500 : 0;
+	;
+
+            // Determine Overnight Allowance based on suffix
+            let overnightAllowance = 1440; // Default
+            if (route.endsWith("2")) {
+                overnightAllowance *= 2;
+            } else if (route.endsWith("3")) {
+                overnightAllowance *= 3;
+            }
+
+            const routeIncome = basePay + sickLeavePay + sectorAllowance + transportationAllowance + commission + overnightAllowance;
+            totalIncome += routeIncome;
+            totalBlockHours += blockHours;
+
+            let row = document.createElement("tr");
+            row.innerHTML = `<td>${route}</td><td>${routeIncome.toFixed(2)}</td><td>${blockHours.toFixed(2)}</td>`;
+            tableBody.appendChild(row);
         }
+    });
+
+    document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
+    document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
+}
+
 
         // Initialize first dropdown
         populateDropdown(document.querySelector(".routeDropdown"));
@@ -327,7 +375,7 @@
     
 </script>
 <div style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 5px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); font-size: 14px;">
-        <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpimdays.github.io%2Fdoeseverything%2F&label=Visits&labelColor=%23d9e3f0&countColor=%23d9e3f0" alt="Visitor Counter">
+        <img src="https://visitorbadge.io/status?path=pimdays/doeseverything" alt="Visitor Counter">
     </div>
 </body>
 </html>
