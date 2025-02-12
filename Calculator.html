@@ -312,7 +312,22 @@
             function resetForm() {
     location.reload();
 }
-
-    </script>
+    
+        function updateVisitorCount() {
+            if (localStorage.getItem('visitorCount')) {
+                let count = parseInt(localStorage.getItem('visitorCount')) + 1;
+                localStorage.setItem('visitorCount', count);
+                document.getElementById('visitorCount').textContent = `Visitors: ${count}`;
+            } else {
+                localStorage.setItem('visitorCount', 1);
+                document.getElementById('visitorCount').textContent = 'Visitors: 1';
+            }
+        }
+        updateVisitorCount();
+    
+</script>
+<div style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 5px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); font-size: 14px;">
+        <img src="https://visitorbadge.io/status?path=pimdays/doeseverything" alt="Visitor Counter">
+    </div>
 </body>
 </html>
