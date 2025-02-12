@@ -5,23 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f0f0; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
-        select, button { width: 100%; padding: 10px; margin-top: 10px; }
-        .result { font-size: 18px; margin-top: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #ffffff; }
+        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 	0.2); }
+        select, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 6px; border: 1px solid #ccc; }
+        button { background-color: #D32F2F; color: white; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; border-radius: 6px; color: 	white; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; color: white; font-weight: bold; border: none; cursor: pointer; 	transition: 0.3s; }
+        .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000000; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #f4f4f4; font-weight: bold; }
+        tr:nth-child(even) { background-color: #ffffff; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Calculator</h2>
         <div id="routeContainer">
-            <label for="routes">Flight</label>
+         <label for="sickLeave" style="margin-top: 20px; font-weight: bold; font-size: 16px; margin-bottom: 8px; 	display: block;">Flight</label>
             <select class="routeDropdown" onchange="addRouteDropdown(this)">
                 <option value="">-- Select Your Flight --</option>
             </select>
         </div>
         
-        <label for="sickLeave">Sick Leave?</label>
+        <label for="sickLeave" style="margin-top: 20px; font-weight: bold; font-size: 16px; margin-bottom: 8px; 	display: block;">Sick Leave?</label>
         <select id="sickLeave">
             <option>No SL</option>
             <option>1 Day SL</option>
@@ -29,10 +34,24 @@
             <option>2 Days in Hospital</option>
         </select>
         
-        <button onclick="calculateIncome()">Calculate</button>
+	<button onclick="calculateIncome()" style="background-color: watermelon; color: white; border: none; 	padding: 10px; border-radius: 5px;">
+    	Calculate
+	</button>
+
         
         <div class="result" id="incomeResult">Total Income: </div>
         <div class="result" id="blockHoursResult">Total Block Hours: </div>
+
+          <table id="incomeTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Flight</th>
+                    <th>Income</th>
+                    <th>Block Hours</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 
     <script>
@@ -266,12 +285,20 @@
             
             let totalIncome = baseSalary;
             let totalBlockHours = 0;
+            const tableBody = document.getElementById("incomeTable").querySelector("tbody");
+            tableBody.innerHTML = "";
+	    document.getElementById("incomeTable").style.display = "table";
             
             selectedRoutes.forEach(route => {
                 const selectedData = dataArray.find(r => r.Routes === route);
                 if (selectedData) {
-                    totalIncome += selectedData[sickLeave] + perRouteBonus;
+                    const routeIncome = selectedData[sickLeave] + perRouteBonus;
+                    totalIncome += routeIncome;
                     totalBlockHours += selectedData["Block hours"];
+                    
+                    let row = document.createElement("tr");
+                    row.innerHTML = `<td>${route}</td><td>${routeIncome.toFixed(2)}</td><td>${selectedData["Block hours"].toFixed(2)}</td>`;
+                    tableBody.appendChild(row);
                 }
             });
             
