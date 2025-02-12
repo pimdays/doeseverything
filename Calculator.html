@@ -38,9 +38,10 @@
     	Calculate
 	</button>
 
-        
         <div class="result" id="incomeResult">Total Income: </div>
         <div class="result" id="blockHoursResult">Total Block Hours: </div>
+
+        <img src="reset-icon.png" onclick="resetForm()" style="width: 20px; height: 20px; cursor: pointer; 	display: block; margin: 10px auto;" alt="Reset">
 
           <table id="incomeTable" style="display: none;">
             <thead>
@@ -308,6 +309,10 @@
 
         // Initialize first dropdown
         populateDropdown(document.querySelector(".routeDropdown"));
+            function resetForm() {
+    location.reload();
+}
+
     </script>
 </body>
 </html>
