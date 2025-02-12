@@ -265,11 +265,17 @@ function calculateIncome() {
             const sectorAllowance = 600;
             const transportationAllowance = 600;
             const includeCommission = document.getElementById("includeCommission").checked;
-	    const commission = includeCommission ? 500 : 0;
-	;
+            const commission = includeCommission ? 500 : 0;
 
-            // Determine Overnight Allowance based on suffix
+            // Determine Overnight Allowance
             let overnightAllowance = 1440; // Default
+            if (route === "DEL") {
+                overnightAllowance = 0; // No overnight allowance for DEL
+            } else if (route === "SYD") {
+                overnightAllowance = 2160; // Special condition for SYD
+            }
+            
+            // Multiply overnight allowance if suffix is present
             if (route.endsWith("2")) {
                 overnightAllowance *= 2;
             } else if (route.endsWith("3")) {
@@ -281,7 +287,7 @@ function calculateIncome() {
             totalBlockHours += blockHours;
 
             let row = document.createElement("tr");
-            row.innerHTML = `<td>${route}</td><td>${routeIncome.toLocaleString(undefined, 			    {minimumFractionDigits: 2})}</td><td>${blockHours.toFixed(2)}</td>`;
+            row.innerHTML = `<td>${route}</td><td>${routeIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td>${blockHours.toFixed(2)}</td>`;
             tableBody.appendChild(row);
         }
     });
