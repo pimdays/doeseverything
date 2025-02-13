@@ -50,19 +50,8 @@
 
         <img src="reset-icon.png" onclick="resetForm()" style="width: 20px; height: 20px; cursor: pointer; 	display: block; margin: 10px auto;" alt="Reset">
 
-          <table id="incomeTable" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Flight</th>
-                    <th>Income</th>
-                    <th>Block Hours</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
 	<img id="randomImage" class="random-image" src="" alt="Random Image">
-	<div class="donation-message">สมทบทุนซื้อเปียกๆ เลี้ยงยูซุ</div>
+	<div class="donation-message">สแกนเพื่อสมทบทุนซื้อเปียกๆ เพื่อยูซุ</div>
         <img src="qr.jpg" class="qr-image" alt="QR Image">
     </div>
 
@@ -245,9 +234,6 @@ function calculateIncome() {
 
     let totalIncome = 12000;
     let totalBlockHours = 0;
-    const tableBody = document.getElementById("incomeTable").querySelector("tbody");
-    tableBody.innerHTML = "";
-    document.getElementById("incomeTable").style.display = "table";
 
     const sickLeaveMultiplier = {
         "No SL": 105,
@@ -286,9 +272,6 @@ function calculateIncome() {
             totalIncome += routeIncome;
             totalBlockHours += blockHours;
 
-            let row = document.createElement("tr");
-            row.innerHTML = `<td>${route}</td><td>${routeIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}</td><td>${blockHours.toFixed(2)}</td>`;
-            tableBody.appendChild(row);
         }
     });
 
