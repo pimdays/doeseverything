@@ -275,7 +275,7 @@ function calculateIncome() {
         }
     });
 
-    document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
     document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
         }
 
