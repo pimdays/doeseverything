@@ -219,7 +219,10 @@ function calculateIncome() {
             const basePay = blockHours * 250;
             const sickLeavePay = blockHours * sickLeaveMultiplier[sickLeave];
             const sectorAllowance = 600;
-            const transportationAllowance = 600;
+            
+            // Set transportation allowance based on route
+            let transportationAllowance = route === "DEL" ? 300 : 600;
+            
             const includeCommission = document.getElementById("includeCommission").checked;
             const commission = includeCommission ? 500 : 0;
 
@@ -241,7 +244,6 @@ function calculateIncome() {
             const routeIncome = basePay + sickLeavePay + sectorAllowance + transportationAllowance + commission + overnightAllowance;
             totalIncome += routeIncome;
             totalBlockHours += blockHours;
-
         }
     });
 
