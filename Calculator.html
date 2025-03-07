@@ -81,12 +81,6 @@
   '2 Days SL': 6000.0,
   '2 Days in Hospital': 6660.0,
   'Block hours': 12.0},
- {'Routes': 'SYD',
-  'No SL': 10867.5,
-  '1 Day SL': 10477.5,
-  '2 Days SL': 8820.0,
-  '2 Days in Hospital': 9892.5,
-  'Block hours': 19.5},
  {'Routes': 'PVG',
   'No SL': 6105.0,
   '1 Day SL': 5925.0,
@@ -105,12 +99,6 @@
   '2 Days SL': 3696.6666666666665,
   '2 Days in Hospital': 4187.083333333333,
   'Block hours': 8.916666666666666},
- {'Routes': 'HRB',
-  'No SL': 7612.916666666666,
-  '1 Day SL': 7354.583333333333,
-  '2 Days SL': 6256.666666666666,
-  '2 Days in Hospital': 6967.083333333333,
-  'Block hours': 12.916666666666666},
  {'Routes': 'ICN2',
   'No SL': 8603.75,
   '1 Day SL': 8368.75,
@@ -129,24 +117,12 @@
   '2 Days SL': 7440.0,
   '2 Days in Hospital': 8100.0,
   'Block hours': 12.0},
- {'Routes': 'SYD2',
-  'No SL': 13027.5,
-  '1 Day SL': 12637.5,
-  '2 Days SL': 10980.0,
-  '2 Days in Hospital': 12052.5,
-  'Block hours': 19.5},
  {'Routes': 'NGO2',
   'No SL': 8860.416666666666,
   '1 Day SL': 8612.083333333332,
   '2 Days SL': 7556.666666666666,
   '2 Days in Hospital': 8239.583333333332,
   'Block hours': 12.416666666666666},
- {'Routes': 'HRB2',
-  'No SL': 9052.916666666666,
-  '1 Day SL': 8794.583333333332,
-  '2 Days SL': 7696.666666666666,
-  '2 Days in Hospital': 8407.083333333332,
-  'Block hours': 12.916666666666666},
  {'Routes': 'ICN3',
   'No SL': 10043.75,
   '1 Day SL': 9808.75,
@@ -165,24 +141,12 @@
   '2 Days SL': 8880.0,
   '2 Days in Hospital': 9540.0,
   'Block hours': 12.0},
- {'Routes': 'SYD3',
-  'No SL': 14467.5,
-  '1 Day SL': 14077.5,
-  '2 Days SL': 12420.0,
-  '2 Days in Hospital': 13492.5,
-  'Block hours': 19.5},
  {'Routes': 'NGO3',
   'No SL': 10300.416666666666,
   '1 Day SL': 10052.083333333332,
   '2 Days SL': 8996.666666666666,
   '2 Days in Hospital': 9679.583333333332,
   'Block hours': 12.416666666666666},
- {'Routes': 'HRB3',
-  'No SL': 11212.916666666666,
-  '1 Day SL': 10954.583333333332,
-  '2 Days SL': 9856.666666666666,
-  '2 Days in Hospital': 10567.083333333332,
-  'Block hours': 12.916666666666666},
         ];
 
 	function populateDropdown(dropdown) {
@@ -236,17 +200,17 @@ function calculateIncome() {
     let totalBlockHours = 0;
 
     const sickLeaveMultiplier = {
-        "No SL": 105,
-        "1 Day SL": 85,
+        "No SL": 100,
+        "1 Day SL": 80,
         "2 Days SL": 0,
-        "2 Days in Hospital": 55
+        "2 Days in Hospital": 50
     };
 
     selectedRoutes.forEach(route => {
         const selectedData = dataArray.find(r => r.Routes === route);
         if (selectedData) {
             const blockHours = selectedData["Block hours"];
-            const basePay = blockHours * 280;
+            const basePay = blockHours * 250;
             const sickLeavePay = blockHours * sickLeaveMultiplier[sickLeave];
             const sectorAllowance = 600;
             const transportationAllowance = 600;
@@ -254,11 +218,11 @@ function calculateIncome() {
             const commission = includeCommission ? 500 : 0;
 
             // Determine Overnight Allowance
-            let overnightAllowance = 1440; // Default
+            let overnightAllowance = 2880; // Default
             if (route === "DEL") {
                 overnightAllowance = 0; // No overnight allowance for DEL
             } else if (route === "SYD") {
-                overnightAllowance = 2160; // Special condition for SYD
+                overnightAllowance = 2880; // Special condition for SYD
             }
             
             // Multiply overnight allowance if suffix is present
