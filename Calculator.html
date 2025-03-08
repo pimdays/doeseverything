@@ -58,100 +58,36 @@
     <script>
         const dataArray = [
             {'Routes': 'CTS',
-  'No SL': 8318.75,
-  '1 Day SL': 8023.75,
-  '2 Days SL': 6770.0,
-  '2 Days in Hospital': 7581.25,
   'Block hours': 14.75},
  {'Routes': 'ICN',
-  'No SL': 7163.75,
-  '1 Day SL': 6928.75,
-  '2 Days SL': 5930.0,
-  '2 Days in Hospital': 6576.25,
   'Block hours': 11.75},
  {'Routes': 'NRT',
-  'No SL': 7837.5,
-  '1 Day SL': 7567.5,
-  '2 Days SL': 6420.0,
-  '2 Days in Hospital': 7162.5,
   'Block hours': 13.5},
  {'Routes': 'KIX',
-  'No SL': 7260.0,
-  '1 Day SL': 7020.0,
-  '2 Days SL': 6000.0,
-  '2 Days in Hospital': 6660.0,
   'Block hours': 12.0},
  {'Routes': 'PVG',
-  'No SL': 6105.0,
-  '1 Day SL': 5925.0,
-  '2 Days SL': 5160.0,
-  '2 Days in Hospital': 5655.0,
   'Block hours': 9.0},
  {'Routes': 'NGO',
-  'No SL': 7420.416666666666,
-  '1 Day SL': 7172.083333333333,
-  '2 Days SL': 6116.666666666666,
-  '2 Days in Hospital': 6799.583333333333,
   'Block hours': 12.416666666666666},
  {'Routes': 'DEL',
-  'No SL': 4632.916666666666,
-  '1 Day SL': 4454.583333333333,
-  '2 Days SL': 3696.6666666666665,
-  '2 Days in Hospital': 4187.083333333333,
   'Block hours': 8.916666666666666},
  {'Routes': 'ICN2',
-  'No SL': 8603.75,
-  '1 Day SL': 8368.75,
-  '2 Days SL': 7370.0,
-  '2 Days in Hospital': 8016.25,
   'Block hours': 11.75},
  {'Routes': 'NRT2',
-  'No SL': 9277.5,
-  '1 Day SL': 9007.5,
-  '2 Days SL': 7860.0,
-  '2 Days in Hospital': 8602.5,
   'Block hours': 13.5},
  {'Routes': 'KIX2',
-  'No SL': 8700.0,
-  '1 Day SL': 8460.0,
-  '2 Days SL': 7440.0,
-  '2 Days in Hospital': 8100.0,
   'Block hours': 12.0},
  {'Routes': 'PVG2',
-  'No SL': 7545.0,
-  '1 Day SL': 7365.0,
-  '2 Days SL': 6770.0,
-  '2 Days in Hospital': 7095.0,
   'Block hours': 9.0},
  {'Routes': 'NGO2',
-  'No SL': 8860.416666666666,
-  '1 Day SL': 8612.083333333332,
-  '2 Days SL': 7556.666666666666,
-  '2 Days in Hospital': 8239.583333333332,
   'Block hours': 12.416666666666666},
  {'Routes': 'ICN3',
-  'No SL': 10043.75,
-  '1 Day SL': 9808.75,
-  '2 Days SL': 8810.0,
-  '2 Days in Hospital': 9456.25,
   'Block hours': 11.75},
  {'Routes': 'NRT3',
-  'No SL': 10717.5,
-  '1 Day SL': 10447.5,
-  '2 Days SL': 9300.0,
-  '2 Days in Hospital': 10042.5,
   'Block hours': 13.5},
  {'Routes': 'KIX3',
-  'No SL': 10140.0,
-  '1 Day SL': 9900.0,
-  '2 Days SL': 8880.0,
-  '2 Days in Hospital': 9540.0,
   'Block hours': 12.0},
  {'Routes': 'NGO3',
-  'No SL': 10300.416666666666,
-  '1 Day SL': 10052.083333333332,
-  '2 Days SL': 8996.666666666666,
-  '2 Days in Hospital': 9679.583333333332,
   'Block hours': 12.416666666666666},
         ];
 
@@ -219,10 +155,10 @@ function calculateIncome() {
             const basePay = blockHours * 250;
             const sickLeavePay = blockHours * sickLeaveMultiplier[sickLeave];
             const sectorAllowance = 600;
-            
-            // Set transportation allowance based on route
-            let transportationAllowance = route === "DEL" ? 300 : 600;
-            
+
+            // Set transportation allowance
+            let transportationAllowance = route === "DEL" ? 300 : 300 * 2; // Keep 300 for DEL, double for others
+
             const includeCommission = document.getElementById("includeCommission").checked;
             const commission = includeCommission ? 500 : 0;
 
@@ -253,7 +189,7 @@ function calculateIncome() {
 
         document.addEventListener("DOMContentLoaded", function() {
             populateDropdown(document.querySelector(".routeDropdown"));
-            const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg", 	    	    "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
+            const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg",  "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
             document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
         });
 
