@@ -22,13 +22,8 @@
 </head>
 <body>
     <div class="container">
-        <h2>Calculator (updated!!!)</h2>
-        <div id="routeContainer">
-         <label for="sickLeave" style="margin-top: 20px; font-weight: bold; font-size: 16px; margin-bottom: 8px; 	display: block;">Flight</label>
-            <select class="routeDropdown" onchange="addRouteDropdown(this)">
-                <option value="">-- Select Your Flight --</option>
-            </select>
-        </div>
+        <h2>Calculator (base salary EXCLUDED)</h2>
+	<div id="routeContainer"></div>
         
         <label for="sickLeave" style="margin-top: 20px; font-weight: bold; font-size: 16px; margin-bottom: 8px; 	display: block;">Sick Leave?</label>
         <select id="sickLeave">
@@ -56,153 +51,209 @@
     </div>
 
     <script>
-        const dataArray = [
-            {'Routes': 'CTS',
-  'Block hours': 14.75},
- {'Routes': 'ICN',
-  'Block hours': 11.75},
- {'Routes': 'NRT',
-  'Block hours': 13.5},
- {'Routes': 'KIX',
-  'Block hours': 12.0},
- {'Routes': 'PVG',
-  'Block hours': 9.0},
- {'Routes': 'NGO',
-  'Block hours': 12.416666666666666},
- {'Routes': 'DEL',
-  'Block hours': 8.916666666666666},
- {'Routes': 'CTS2',
-  'Block hours': 14.75},
- {'Routes': 'ICN2',
-  'Block hours': 11.75},
- {'Routes': 'NRT2',
-  'Block hours': 13.5},
- {'Routes': 'KIX2',
-  'Block hours': 12.0},
- {'Routes': 'PVG2',
-  'Block hours': 9.0},
- {'Routes': 'NGO2',
-  'Block hours': 12.416666666666666},
- {'Routes': 'ICN3',
-  'Block hours': 11.75},
- {'Routes': 'NRT3',
-  'Block hours': 13.5},
- {'Routes': 'KIX3',
-  'Block hours': 12.0},
- {'Routes': 'NGO3',
-  'Block hours': 12.416666666666666},
-        ];
+const dataArray = [
+  { 'Routes': 'CTS', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
+  { 'Routes': 'ICN', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
+  { 'Routes': 'NRT', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
+  { 'Routes': 'KIX', 'Block hours Outbound': 5.50, 'Block hours Inbound': 6.50 },
+  { 'Routes': 'PVG', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
+  { 'Routes': 'NGO', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
+  { 'Routes': 'DEL', 'Block hours Outbound': 4.67, 'Block hours Inbound': 4.25 },
+  { 'Routes': 'CTS2', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
+  { 'Routes': 'ICN2', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
+  { 'Routes': 'NRT2', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
+  { 'Routes': 'KIX2', 'Block hours Outbound': 5.50, 'Block hours Inbound': 6.50 },
+  { 'Routes': 'PVG2', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
+  { 'Routes': 'NGO2', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
+  { 'Routes': 'CTS3', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
+  { 'Routes': 'ICN3', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
+  { 'Routes': 'NRT3', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
+  { 'Routes': 'KIX3', 'Block hours Outbound': 5.50, 'Block hours Inbound': 6.50 },
+  { 'Routes': 'PVG3', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
+  { 'Routes': 'NGO3', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
+];
 
-	function populateDropdown(dropdown) {
-    	dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
+function populateDropdown(dropdown) {
+  dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
+  let group1 = [], group2 = [], group3 = [];
+  dataArray.forEach(route => {
+    if (route.Routes.endsWith("2")) group2.push(route.Routes);
+    else if (route.Routes.endsWith("3")) group3.push(route.Routes);
+    else group1.push(route.Routes);
+  });
+  group1.sort(); group2.sort(); group3.sort();
+  [...group1, ...group2, ...group3].forEach(route => {
+    let option = document.createElement("option");
+    option.value = route;
+    option.textContent = route;
+    dropdown.appendChild(option);
+  });
+}
 
-    	// Grouping and sorting logic
-    	let group1 = []; // No suffix
-    	let group2 = []; // Ends with "2"
-    	let group3 = []; // Ends with "3"
+function addRouteDropdown(selectElement) {
+  const container = document.getElementById("routeContainer");
 
-   	 dataArray.forEach(route => {
-   	     if (route.Routes.endsWith("2")) {
-   	         group2.push(route.Routes);
-        	} else if (route.Routes.endsWith("3")) {
-   	         group3.push(route.Routes);
-   	     } else {
-    	        group1.push(route.Routes);
-     		   }
- 	   });
+  const wrapper = document.createElement("div");
+  wrapper.className = "routeWrapper";
+  wrapper.style.display = "flex";
+  wrapper.style.alignItems = "center";
+  wrapper.style.gap = "10px";
+  wrapper.style.marginTop = "10px";
 
-	    // Sort each group alphabetically
-	    group1.sort();
-	    group2.sort();
-	    group3.sort();
+  const label = document.createElement("label");
+  label.textContent = "Flight";
+  label.style.fontWeight = "bold";
+  label.style.fontSize = "16px";
+  label.style.marginRight = "10px";
 
-	    // Append to dropdown
-	    [...group1, ...group2, ...group3].forEach(route => {
-        	let option = document.createElement("option");
-	        option.value = route;
-	        option.textContent = route;
-	        dropdown.appendChild(option);
-    		});
-	}
+  const newDropdown = document.createElement("select");
+  newDropdown.className = "routeDropdown";
+  populateDropdown(newDropdown);
 
-        function addRouteDropdown(selectElement) {
-            if (selectElement.value !== "") {
-                const container = document.getElementById("routeContainer");
-                let newDropdown = document.createElement("select");
-                newDropdown.className = "routeDropdown";
-                newDropdown.onchange = function() { addRouteDropdown(this); };
-                populateDropdown(newDropdown);
-                container.appendChild(newDropdown);
-            }
-        }
+  const deadheadWrapper = document.createElement("span");
+  deadheadWrapper.style.display = "none";
+  deadheadWrapper.style.alignItems = "center";
+  deadheadWrapper.style.gap = "10px";
+
+  const deadheadCheckbox = document.createElement("input");
+  deadheadCheckbox.type = "checkbox";
+  deadheadCheckbox.className = "deadheadCheckbox";
+
+  const checkboxLabel = document.createElement("label");
+  checkboxLabel.textContent = "DHC?";
+  checkboxLabel.style.fontSize = "14px";
+  checkboxLabel.style.display = "flex";
+  checkboxLabel.style.alignItems = "center";
+  checkboxLabel.style.gap = "4px";
+  checkboxLabel.prepend(deadheadCheckbox);
+
+  deadheadWrapper.appendChild(checkboxLabel);
+
+  const directionSelect = document.createElement("select");
+directionSelect.className = "deadheadDirection";
+directionSelect.innerHTML = `
+    <option value="">-- Operating? --</option>
+    <option value="outbound">Outbound</option>
+    <option value="inbound">Inbound</option>
+`;
+directionSelect.style.display = "none";
+directionSelect.style.marginTop = "5px";
+directionSelect.style.minWidth = "120px";  // 👈 make it wider
+directionSelect.style.padding = "6px";     // 👈 nice padding
+
+  deadheadCheckbox.addEventListener("change", () => {
+    directionSelect.style.display = deadheadCheckbox.checked ? "block" : "none";
+  });
+
+  deadheadWrapper.appendChild(directionSelect);
+
+  newDropdown.onchange = function() {
+    if (newDropdown.value !== "") {
+      deadheadWrapper.style.display = "flex";
+      addRouteDropdown(this);
+    } else {
+      deadheadWrapper.style.display = "none";
+      deadheadCheckbox.checked = false;
+      directionSelect.style.display = "none";
+      directionSelect.value = "";
+    }
+  };
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "✖";
+  deleteBtn.style.background = "#cccccc";
+  deleteBtn.style.color = "black";
+  deleteBtn.style.border = "none";
+  deleteBtn.style.borderRadius = "4px";
+  deleteBtn.style.padding = "2px 4px";
+  deleteBtn.style.fontSize = "11px";
+  deleteBtn.style.cursor = "pointer";
+  deleteBtn.style.width = "auto";
+  deleteBtn.style.minWidth = "unset";
+  deleteBtn.style.display = "inline-flex";
+  deleteBtn.style.alignItems = "center";
+  deleteBtn.style.justifyContent = "center";
+  deleteBtn.title = "Remove this flight";
+  deleteBtn.onclick = () => {
+    const wrappers = document.querySelectorAll(".routeWrapper");
+    if (wrappers.length > 1) wrapper.remove();
+    else alert("You must have at least one flight!");
+  };
+
+  wrapper.appendChild(label);
+  wrapper.appendChild(newDropdown);
+  wrapper.appendChild(deadheadWrapper);
+  wrapper.appendChild(deleteBtn);
+
+  container.appendChild(wrapper);
+}
+
+function createFirstDropdown() {
+  addRouteDropdown(); // reuse the same function now
+}
 
 function calculateIncome() {
-    const selectedRoutes = [...document.querySelectorAll(".routeDropdown")].map(select => select.value).filter(val => val);
-    const sickLeave = document.getElementById("sickLeave").value;
+  const sickLeave = document.getElementById("sickLeave").value;
+  let totalIncome = 0, totalBlockHours = 0;
+  const sickLeaveMultiplier = { "No SL": 100, "1 Day SL": 90, "2 Days SL": 0, "2 Days in Hospital": 60 };
 
-    let totalIncome = 12000;
-    let totalBlockHours = 0;
+  const wrappers = document.querySelectorAll(".routeWrapper");
+  for (const wrapper of wrappers) {
+    const route = wrapper.querySelector(".routeDropdown").value;
+    const isDeadhead = wrapper.querySelector(".deadheadCheckbox").checked;
+    const direction = wrapper.querySelector(".deadheadDirection").value;
+    const selectedData = dataArray.find(r => r.Routes === route);
+    if (!route || !selectedData) continue;
+    if (isDeadhead && !direction) {
+      alert(`Please select whether you are operating Outbound or Inbound for flight ${route}`);
+      return;
+    }
 
-    const sickLeaveMultiplier = {
-        "No SL": 100,
-        "1 Day SL": 90,
-        "2 Days SL": 0,
-        "2 Days in Hospital": 60
-    };
+    const outbound = selectedData["Block hours Outbound"];
+    const inbound = selectedData["Block hours Inbound"];
+    let operatedHours = 0, deadheadHours = 0;
 
-    selectedRoutes.forEach(route => {
-        const selectedData = dataArray.find(r => r.Routes === route);
-        if (selectedData) {
-            const blockHours = selectedData["Block hours"];
-            const basePay = blockHours * 250;
-            const sickLeavePay = blockHours * sickLeaveMultiplier[sickLeave];
-            const sectorAllowance = 600;
+    if (!isDeadhead) {
+      operatedHours = outbound + inbound;
+    } else {
+      operatedHours = direction === "outbound" ? outbound : inbound;
+      deadheadHours = direction === "outbound" ? inbound : outbound;
+    }
 
-            // Set transportation allowance
-            let transportationAllowance = route === "DEL" ? 300 : 300 * 2; // Keep 300 for DEL, double for others
+    const basePay = operatedHours * 250;
+    const sickLeavePay = operatedHours * sickLeaveMultiplier[sickLeave];
+    const sectorAllowance = operatedHours > 0 ? 600 : 0;
+    const includeCommission = document.getElementById("includeCommission").checked;
+    const commission = includeCommission ? 500 : 0;
+    let transportationAllowance = route === "DEL" ? 300 : 300 * 2;
 
-            const includeCommission = document.getElementById("includeCommission").checked;
-            const commission = includeCommission ? 500 : 0;
+    let overnightAllowance = 0;
+    if (!isDeadhead && route !== "DEL") {
+      overnightAllowance = 2880;
+      if (route.endsWith("2")) overnightAllowance *= 2;
+      if (route.endsWith("3")) overnightAllowance *= 3;
+    }
 
-            // Determine Overnight Allowance
-            let overnightAllowance = 2880; // Default
-            if (route === "DEL") {
-                overnightAllowance = 0; // No overnight allowance for DEL
-            } else if (route === "SYD") {
-                overnightAllowance = 2880; // Special condition for SYD
-            }
-            
-            // Multiply overnight allowance if suffix is present
-            if (route.endsWith("2")) {
-                overnightAllowance *= 2;
-            } else if (route.endsWith("3")) {
-                overnightAllowance *= 3;
-            }
+    const deadheadPay = deadheadHours * 250;
+    const routeIncome = basePay + sickLeavePay + sectorAllowance + transportationAllowance + commission + overnightAllowance + deadheadPay;
+    totalIncome += routeIncome;
+    totalBlockHours += operatedHours + deadheadHours;
+  }
 
-            const routeIncome = basePay + sickLeavePay + sectorAllowance + transportationAllowance + commission + overnightAllowance;
-            totalIncome += routeIncome;
-            totalBlockHours += blockHours;
-        }
-    });
-
-    document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
-    document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            populateDropdown(document.querySelector(".routeDropdown"));
-            const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg",  "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
-            document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
-        });
-
-        // Initialize first dropdown
-        populateDropdown(document.querySelector(".routeDropdown"));
-            function resetForm() {
-    location.reload();
+  document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
+  document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
 }
-    
-   
-    </script>
+
+document.addEventListener("DOMContentLoaded", function() {
+  createFirstDropdown();
+  const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg", "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
+  document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
+});
+
+function resetForm() {
+  location.reload();
+}
+</script>
     
     <div class="visitor-counter">
         <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpimdays.github.io%2Fdoeseverything%2FCalculator&label=Visits&labelColor=%23d9e3f0&countColor=%23d9e3f0" alt="Visitor Counter">
