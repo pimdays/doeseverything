@@ -1,56 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #ffffff; }
-        .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 	0.2); }
-        select, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 6px; border: 1px solid #ccc; }
-        button { background-color: #D32F2F; color: white; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; border-radius: 6px; color: 	white; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; color: white; font-weight: bold; border: none; cursor: pointer; 	transition: 0.3s; }
-        .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000000; }
-        table { width: 100%; margin-top: 20px; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #f4f4f4; font-weight: bold; }
-        tr:nth-child(even) { background-color: #ffffff; }
-	.donation-message { margin-top: 5px; font-size: 13px; font-weight: normal; color: #333; font-family: 	Times New Roman, Times New Roman; }
-        .random-image { width: 200px; height: 200px; margin-top: 10px; }
-	.qr-image { width: 100px; height: 100px; margin-top: 10px; }
-	.visitor-counter { position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; 	border-radius: 5px; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #ffffff; }
+    .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+    select, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 6px; border: 1px solid #ccc; }
+    button { background-color: #D32F2F; color: white; font-weight: bold; border: none; cursor: pointer; transition: .3s; border-radius: 6px; }
+    .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000; }
+    .note { font-size: 13px; color: #555; margin-top: 4px; }
+    .donation-message { margin-top: 5px; font-size: 13px; color: #333; font-family: "Times New Roman", Times, serif; }
+    .random-image { width: 200px; height: 200px; margin-top: 10px; }
+    .qr-image { width: 100px; height: 100px; margin-top: 10px; }
+    .visitor-counter { position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,.2); }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Calculator (base salary EXCLUDED)</h2>
-	<div id="routeContainer"></div>
-        
-        <label for="sickLeave" style="margin-top: 20px; font-weight: bold; font-size: 16px; margin-bottom: 8px; 	display: block;">Sick Leave?</label>
-        <select id="sickLeave">
-            <option>No SL</option>
-            <option>1 Day SL</option>
-            <option>2 Days SL</option>
-            <option>2 Days in Hospital</option>
-        </select>
-        <label for="includeCommission" style="margin-top: 10px; font-weight: bold; font-size: 16px; display: block;">
-            <input type="checkbox" id="includeCommission"> Include Commission
-        </label>
-        
-	<button onclick="calculateIncome()" style="background-color: watermelon; color: white; border: none; 	padding: 10px; border-radius: 5px;">
-    	Calculate
-	</button>
+  <div class="container">
+    <h2>Calculator (Mother's day update)</h2>
+    <div id="routeContainer"></div>
 
-        <div class="result" id="incomeResult">Total Income: </div>
-        <div class="result" id="blockHoursResult">Total Block Hours: </div>
+    <label for="sickLeave" style="margin-top:20px;font-weight:bold;font-size:16px;margin-bottom:8px;display:block;">Sick Leave?</label>
+    <select id="sickLeave">
+      <option>No SL</option>
+      <option>1 Day SL</option>
+      <option>2 Days SL</option>
+      <option>2 Days in Hospital</option>
+    </select>
 
-        <img src="reset-icon.png" onclick="resetForm()" style="width: 20px; height: 20px; cursor: pointer; 	display: block; margin: 10px auto;" alt="Reset">
+    <label for="includeCommission" style="margin-top:10px;font-weight:bold;font-size:16px;display:block;">
+      <input type="checkbox" id="includeCommission"> Include Commission
+    </label>
 
-	<img id="randomImage" class="random-image" src="" alt="Random Image">
-	<div class="donation-message">สแกนสมทบทุนซื้อเปียกๆ เพื่อยูซุ</div>
-        <img src="qr.jpg" class="qr-image" alt="QR Image">
-    </div>
+    <button onclick="calculateIncome()">Calculate</button>
 
-    <script>
+    <div class="result" id="incomeResult">Total Income: </div>
+    <div class="result" id="blockHoursResult">Total Block Hours: </div>
+    <div class="note">(*Block hours include only operating hours)</div>
+
+    <img src="reset-icon.png" onclick="resetForm()" style="width:20px;height:20px;cursor:pointer;display:block;margin:10px auto;" alt="Reset">
+
+    <img id="randomImage" class="random-image" src="" alt="Random Image">
+    <div class="donation-message">สแกนสมทบทุนซื้อเปียกๆ เพื่อยูซุ</div>
+    <img src="qr.jpg" class="qr-image" alt="QR Image">
+  </div>
+
+  <script>
 const dataArray = [
   { 'Routes': 'CTS', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
   { 'Routes': 'ICN', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
@@ -83,14 +80,14 @@ function populateDropdown(dropdown) {
   });
   group1.sort(); group2.sort(); group3.sort();
   [...group1, ...group2, ...group3].forEach(route => {
-    let option = document.createElement("option");
+    const option = document.createElement("option");
     option.value = route;
     option.textContent = route;
     dropdown.appendChild(option);
   });
 }
 
-function addRouteDropdown(selectElement) {
+function addRouteDropdown() {
   const container = document.getElementById("routeContainer");
 
   const wrapper = document.createElement("div");
@@ -110,36 +107,56 @@ function addRouteDropdown(selectElement) {
   newDropdown.className = "routeDropdown";
   populateDropdown(newDropdown);
 
+  // Layover (default checked)
+  const layoverWrapper = document.createElement("span");
+  layoverWrapper.style.display = "none";
+  layoverWrapper.style.alignItems = "center";
+  layoverWrapper.style.gap = "6px";
+
+  const layoverCheckbox = document.createElement("input");
+  layoverCheckbox.type = "checkbox";
+  layoverCheckbox.className = "layoverCheckbox";
+  layoverCheckbox.checked = true;
+
+  const layoverLabel = document.createElement("label");
+  layoverLabel.textContent = "Layover?";
+  layoverLabel.style.fontSize = "14px";
+  layoverLabel.style.display = "flex";
+  layoverLabel.style.alignItems = "center";
+  layoverLabel.style.gap = "4px";
+  layoverLabel.prepend(layoverCheckbox);
+  layoverWrapper.appendChild(layoverLabel);
+
+  // DHC + direction
   const deadheadWrapper = document.createElement("span");
   deadheadWrapper.style.display = "none";
   deadheadWrapper.style.alignItems = "center";
-  deadheadWrapper.style.gap = "10px";
+  deadheadWrapper.style.gap = "6px";
 
   const deadheadCheckbox = document.createElement("input");
   deadheadCheckbox.type = "checkbox";
   deadheadCheckbox.className = "deadheadCheckbox";
 
-  const checkboxLabel = document.createElement("label");
-  checkboxLabel.textContent = "DHC?";
-  checkboxLabel.style.fontSize = "14px";
-  checkboxLabel.style.display = "flex";
-  checkboxLabel.style.alignItems = "center";
-  checkboxLabel.style.gap = "4px";
-  checkboxLabel.prepend(deadheadCheckbox);
-
-  deadheadWrapper.appendChild(checkboxLabel);
+  const dhcLabel = document.createElement("label");
+  dhcLabel.textContent = "DHC?";
+  dhcLabel.style.fontSize = "14px";
+  dhcLabel.style.display = "flex";
+  dhcLabel.style.alignItems = "center";
+  dhcLabel.style.gap = "4px";
+  dhcLabel.prepend(deadheadCheckbox);
+  deadheadWrapper.appendChild(dhcLabel);
 
   const directionSelect = document.createElement("select");
-directionSelect.className = "deadheadDirection";
-directionSelect.innerHTML = `
+  directionSelect.className = "deadheadDirection";
+  directionSelect.innerHTML = `
     <option value="">-- Operating? --</option>
     <option value="outbound">Outbound</option>
     <option value="inbound">Inbound</option>
-`;
-directionSelect.style.display = "none";
-directionSelect.style.marginTop = "5px";
-directionSelect.style.minWidth = "120px";  // 👈 make it wider
-directionSelect.style.padding = "6px";     // 👈 nice padding
+  `;
+  directionSelect.style.display = "none";
+  directionSelect.style.marginTop = "5px";
+  directionSelect.style.minWidth = "120px";
+  directionSelect.style.padding = "6px";
 
   deadheadCheckbox.addEventListener("change", () => {
     directionSelect.style.display = deadheadCheckbox.checked ? "block" : "none";
@@ -147,12 +164,15 @@ directionSelect.style.padding = "6px";     // 👈 nice padding
 
   deadheadWrapper.appendChild(directionSelect);
 
-  newDropdown.onchange = function() {
+  newDropdown.onchange = function () {
     if (newDropdown.value !== "") {
+      layoverWrapper.style.display = "flex";
       deadheadWrapper.style.display = "flex";
-      addRouteDropdown(this);
+      addRouteDropdown();
     } else {
+      layoverWrapper.style.display = "none";
       deadheadWrapper.style.display = "none";
+      layoverCheckbox.checked = true;
       deadheadCheckbox.checked = false;
       directionSelect.style.display = "none";
       directionSelect.value = "";
@@ -182,6 +202,7 @@ directionSelect.style.padding = "6px";     // 👈 nice padding
 
   wrapper.appendChild(label);
   wrapper.appendChild(newDropdown);
+  wrapper.appendChild(layoverWrapper);
   wrapper.appendChild(deadheadWrapper);
   wrapper.appendChild(deleteBtn);
 
@@ -189,28 +210,37 @@ directionSelect.style.padding = "6px";     // 👈 nice padding
 }
 
 function createFirstDropdown() {
-  addRouteDropdown(); // reuse the same function now
+  addRouteDropdown();
 }
 
 function calculateIncome() {
   const sickLeave = document.getElementById("sickLeave").value;
   let totalIncome = 0, totalBlockHours = 0;
-  const sickLeaveMultiplier = { "No SL": 100, "1 Day SL": 90, "2 Days SL": 0, "2 Days in Hospital": 60 };
+  const sickLeaveMultiplier = {
+    "No SL": 100,
+    "1 Day SL": 90,
+    "2 Days SL": 0,
+    "2 Days in Hospital": 60
+  };
+  const includeCommission = document.getElementById("includeCommission").checked;
 
   const wrappers = document.querySelectorAll(".routeWrapper");
   for (const wrapper of wrappers) {
     const route = wrapper.querySelector(".routeDropdown").value;
     const isDeadhead = wrapper.querySelector(".deadheadCheckbox").checked;
+    const hasLayover = wrapper.querySelector(".layoverCheckbox")?.checked ?? true;
     const direction = wrapper.querySelector(".deadheadDirection").value;
+
     const selectedData = dataArray.find(r => r.Routes === route);
     if (!route || !selectedData) continue;
+
     if (isDeadhead && !direction) {
       alert(`Please select whether you are operating Outbound or Inbound for flight ${route}`);
       return;
     }
 
     const outbound = selectedData["Block hours Outbound"];
-    const inbound = selectedData["Block hours Inbound"];
+    const inbound  = selectedData["Block hours Inbound"];
     let operatedHours = 0, deadheadHours = 0;
 
     if (!isDeadhead) {
@@ -220,43 +250,63 @@ function calculateIncome() {
       deadheadHours = direction === "outbound" ? inbound : outbound;
     }
 
-    const basePay = operatedHours * 250;
-    const sickLeavePay = operatedHours * sickLeaveMultiplier[sickLeave];
-    const sectorAllowance = operatedHours > 0 ? 600 : 0;
-    const includeCommission = document.getElementById("includeCommission").checked;
-    const commission = includeCommission ? 500 : 0;
-    let transportationAllowance = route === "DEL" ? 300 : 300 * 2;
+    const basePay       = operatedHours * 250;
+    const sickLeavePay  = operatedHours * sickLeaveMultiplier[sickLeave];
+
+    // Sector allowance: 300 per operated sector
+    const sectorAllowance = isDeadhead ? 300 : 600;
+
+    const commission    = includeCommission ? 500 : 0;
+
+    // Transportation logic
+    let transportationAllowance;
+    if (route === "DEL" || (isDeadhead && !hasLayover)) {
+      transportationAllowance = 300;
+    } else {
+      transportationAllowance = 600;
+    }
 
     let overnightAllowance = 0;
-    if (!isDeadhead && route !== "DEL") {
+    if (!isDeadhead && hasLayover && route !== "DEL") {
       overnightAllowance = 2880;
       if (route.endsWith("2")) overnightAllowance *= 2;
       if (route.endsWith("3")) overnightAllowance *= 3;
     }
 
     const deadheadPay = deadheadHours * 250;
-    const routeIncome = basePay + sickLeavePay + sectorAllowance + transportationAllowance + commission + overnightAllowance + deadheadPay;
+
+    const routeIncome =
+      basePay +
+      sickLeavePay +
+      sectorAllowance +
+      transportationAllowance +
+      commission +
+      overnightAllowance +
+      deadheadPay;
+
     totalIncome += routeIncome;
-    totalBlockHours += operatedHours + deadheadHours;
+
+    // Block Hours = operating only
+    totalBlockHours += operatedHours;
   }
 
   document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
   document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   createFirstDropdown();
-  const images = ["img1.jpg", "img2.jpg", "img3.jpg", "img4.jpg", "img5.jpg", "img6.jpg", "img7.jpg", "img8.jpg", "img9.jpg", "img10.jpg"];
+  const images = ["img1.jpg","img2.jpg","img3.jpg","img4.jpg","img5.jpg","img6.jpg","img7.jpg","img8.jpg","img9.jpg","img10.jpg"];
   document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
 });
 
 function resetForm() {
   location.reload();
 }
-</script>
-    
-    <div class="visitor-counter">
-        <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpimdays.github.io%2Fdoeseverything%2FCalculator&label=Visits&labelColor=%23d9e3f0&countColor=%23d9e3f0" alt="Visitor Counter">
-    </div>
+  </script>
+
+  <div class="visitor-counter">
+    <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpimdays.github.io%2Fdoeseverything%2FCalculator&label=Visits&labelColor=%23d9e3f0&countColor=%23d9e3f0" alt="Visitor Counter">
+  </div>
 </body>
 </html>
