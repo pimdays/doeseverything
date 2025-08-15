@@ -220,7 +220,7 @@ function addRouteDropdown() {
   deleteBtn.onclick = () => {
     const wrappers = document.querySelectorAll(".routeWrapper");
     if (wrappers.length > 1) wrapper.remove();
-    else alert("You must have at least one flight!");
+    else alert("No flights? Why are you even here?");
   };
 
   rowTop.appendChild(newDropdown);
@@ -414,3 +414,4 @@ function resetForm() {
   </div>
 </body>
 </html>
+
