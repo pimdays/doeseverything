@@ -19,15 +19,23 @@
       height: 40px;
       box-sizing: border-box;
     }
-    button {
-      background-color: #D32F2F;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      transition: .3s;
-      border-radius: 6px;
-    }
+    /* Global buttons (but NOT the Add Flight button) */
+button:not(#addFlightBtn) {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  height: 40px;
+  box-sizing: border-box;
+  background-color: #D32F2F;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: .3s;
+}
 
     .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000; }
     .note { font-size: 13px; color: #555; margin-top: 4px; }
@@ -426,4 +434,5 @@ function resetForm() {
   </div>
 </body>
 </html>
+
 
