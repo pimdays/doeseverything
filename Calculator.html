@@ -56,36 +56,36 @@
       margin-bottom: 6px;
     }
 
-    /* Row 1: flight + delete aligned horizontally */
+    /* Row 1: flight dropdown fills line, delete fixed at end */
     .routeRowTop {
       display: flex;
       gap: 8px;
       align-items: center;
-      justify-content: flex-start;
     }
     .routeDropdown {
-      width: 160px !important;
+      flex: 1;            /* ⬅️ take all available width */
+      min-width: 0;       /* allow proper shrinking on small screens */
       height: 40px;
       font-size: 14px;
       padding: 6px 8px;
       margin-top: 0;
     }
     .deleteBtn {
-  width: 32px !important;
-  height: 32px !important;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  background: #e0e0e0;
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 0;
-  align-self: center;   /* ✅ forces vertical centering */
-}
+      flex: 0 0 32px;     /* ⬅️ fixed 32px area at the right */
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: #e0e0e0;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0;
+    }
 
     /* Row 2: Layover + DHC */
     .routeOptions {
@@ -206,7 +206,7 @@ function addRouteDropdown() {
   label.textContent = "Flight";
   wrapper.appendChild(label);
 
-  // Row 1: flight dropdown + delete button
+  // Row 1: flight dropdown (fills) + delete (fixed)
   const rowTop = document.createElement("div");
   rowTop.className = "routeRowTop";
 
@@ -415,5 +415,3 @@ function resetForm() {
   </div>
 </body>
 </html>
-
-
