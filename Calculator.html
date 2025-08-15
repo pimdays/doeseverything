@@ -119,9 +119,20 @@
       margin-top: 0;
     }
 
-    /* Make the Add Flight button look secondary */
-    #addFlightBtn { background: #607d8b; }
-    #addFlightBtn:hover { filter: brightness(1.05); }
+    /* Make the Add Flight button look subtle/secondary */
+#addFlightBtn {
+  background: transparent;
+  border: 1px dashed #aaa;
+  color: #555;
+  font-weight: normal;
+  margin-top: 16px;
+}
+
+#addFlightBtn:hover {
+  background: #f2f2f2;
+  border-color: #888;
+}
+
   </style>
 </head>
 <body>
@@ -415,3 +426,4 @@ function resetForm() {
   </div>
 </body>
 </html>
+
