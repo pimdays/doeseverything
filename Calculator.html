@@ -6,21 +6,129 @@
   <title>Calculator</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; background-color: #ffffff; }
-    .container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
-    select, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 6px; border: 1px solid #ccc; }
-    button { background-color: #D32F2F; color: white; font-weight: bold; border: none; cursor: pointer; transition: .3s; border-radius: 6px; }
+    .container { max-width: 520px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+
+    /* Global controls (top selects/buttons) */
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      height: 40px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #D32F2F;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: .3s;
+      border-radius: 6px;
+    }
+
     .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000; }
     .note { font-size: 13px; color: #555; margin-top: 4px; }
     .donation-message { margin-top: 5px; font-size: 13px; color: #333; font-family: "Times New Roman", Times, serif; }
     .random-image { width: 200px; height: 200px; margin-top: 10px; }
     .qr-image { width: 100px; height: 100px; margin-top: 10px; }
     .visitor-counter { position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,.2); }
+
+    /* Per-flight rows */
+    .routeWrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: start;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      background: #fafafa;
+      text-align: left;
+    }
+    .flightLabel {
+      font-weight: bold;
+      font-size: 16px;
+      grid-column: 1 / -1;
+      margin-bottom: 6px;
+    }
+
+    /* Row 1: flight + delete aligned horizontally */
+    .routeRowTop {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .routeDropdown {
+      width: 160px !important;
+      height: 40px;
+      font-size: 14px;
+      padding: 6px 8px;
+      margin-top: 0;
+    }
+    .deleteBtn {
+      width: 32px !important;
+      height: 32px !important;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: #e0e0e0;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0;
+    }
+
+    /* Row 2: Layover + DHC */
+    .routeOptions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .optGroup {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+    .optGroup label { font-size: 14px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .pill { padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; }
+    .layoverDuration.pill {
+      width: 110px !important;
+      height: 36px;
+      font-size: 14px;
+      margin-top: 0;
+    }
+    .deadheadDirection.pill {
+      width: 150px !important;
+      height: 36px;
+      font-size: 14px;
+      margin-top: 0;
+    }
+
+    /* Make the Add Flight button look secondary */
+    #addFlightBtn { background: #607d8b; }
+    #addFlightBtn:hover { filter: brightness(1.05); }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Calculator (Mother's day update)</h2>
+
     <div id="routeContainer"></div>
+    <button id="addFlightBtn" type="button">+ Add flight</button>
 
     <label for="sickLeave" style="margin-top:20px;font-weight:bold;font-size:16px;margin-bottom:8px;display:block;">Sick Leave?</label>
     <select id="sickLeave">
@@ -56,6 +164,7 @@ const dataArray = [
   { 'Routes': 'PVG', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
   { 'Routes': 'NGO', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
   { 'Routes': 'DEL', 'Block hours Outbound': 4.67, 'Block hours Inbound': 4.25 },
+  /* entries ending with 2/3 remain in data but are filtered out from dropdown */
   { 'Routes': 'CTS2', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
   { 'Routes': 'ICN2', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
   { 'Routes': 'NRT2', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
@@ -72,18 +181,15 @@ const dataArray = [
 
 function populateDropdown(dropdown) {
   dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
-  let group1 = [], group2 = [], group3 = [];
-  dataArray.forEach(route => {
-    if (route.Routes.endsWith("2")) group2.push(route.Routes);
-    else if (route.Routes.endsWith("3")) group3.push(route.Routes);
-    else group1.push(route.Routes);
-  });
-  group1.sort(); group2.sort(); group3.sort();
-  [...group1, ...group2, ...group3].forEach(route => {
-    const option = document.createElement("option");
-    option.value = route;
-    option.textContent = route;
-    dropdown.appendChild(option);
+  // Only include routes that DO NOT end with "2" or "3"
+  const filtered = dataArray
+    .map(r => r.Routes)
+    .filter(code => !(code.endsWith('2') || code.endsWith('3')));
+  filtered.sort().forEach(route => {
+    const opt = document.createElement("option");
+    opt.value = route;
+    opt.textContent = route;
+    dropdown.appendChild(opt);
   });
 }
 
@@ -92,107 +198,24 @@ function addRouteDropdown() {
 
   const wrapper = document.createElement("div");
   wrapper.className = "routeWrapper";
-  wrapper.style.display = "flex";
-  wrapper.style.alignItems = "center";
-  wrapper.style.gap = "10px";
-  wrapper.style.marginTop = "10px";
 
-  const label = document.createElement("label");
+  // Label (row header)
+  const label = document.createElement("div");
+  label.className = "flightLabel";
   label.textContent = "Flight";
-  label.style.fontWeight = "bold";
-  label.style.fontSize = "16px";
-  label.style.marginRight = "10px";
+  wrapper.appendChild(label);
+
+  // Row 1: flight dropdown + delete button
+  const rowTop = document.createElement("div");
+  rowTop.className = "routeRowTop";
 
   const newDropdown = document.createElement("select");
   newDropdown.className = "routeDropdown";
   populateDropdown(newDropdown);
 
-  // Layover (default checked)
-  const layoverWrapper = document.createElement("span");
-  layoverWrapper.style.display = "none";
-  layoverWrapper.style.alignItems = "center";
-  layoverWrapper.style.gap = "6px";
-
-  const layoverCheckbox = document.createElement("input");
-  layoverCheckbox.type = "checkbox";
-  layoverCheckbox.className = "layoverCheckbox";
-  layoverCheckbox.checked = true;
-
-  const layoverLabel = document.createElement("label");
-  layoverLabel.textContent = "Layover?";
-  layoverLabel.style.fontSize = "14px";
-  layoverLabel.style.display = "flex";
-  layoverLabel.style.alignItems = "center";
-  layoverLabel.style.gap = "4px";
-  layoverLabel.prepend(layoverCheckbox);
-  layoverWrapper.appendChild(layoverLabel);
-
-  // DHC + direction
-  const deadheadWrapper = document.createElement("span");
-  deadheadWrapper.style.display = "none";
-  deadheadWrapper.style.alignItems = "center";
-  deadheadWrapper.style.gap = "6px";
-
-  const deadheadCheckbox = document.createElement("input");
-  deadheadCheckbox.type = "checkbox";
-  deadheadCheckbox.className = "deadheadCheckbox";
-
-  const dhcLabel = document.createElement("label");
-  dhcLabel.textContent = "DHC?";
-  dhcLabel.style.fontSize = "14px";
-  dhcLabel.style.display = "flex";
-  dhcLabel.style.alignItems = "center";
-  dhcLabel.style.gap = "4px";
-  dhcLabel.prepend(deadheadCheckbox);
-  deadheadWrapper.appendChild(dhcLabel);
-
-  const directionSelect = document.createElement("select");
-  directionSelect.className = "deadheadDirection";
-  directionSelect.innerHTML = `
-    <option value="">-- Operating? --</option>
-    <option value="outbound">Outbound</option>
-    <option value="inbound">Inbound</option>
-  `;
-  directionSelect.style.display = "none";
-  directionSelect.style.marginTop = "5px";
-  directionSelect.style.minWidth = "120px";
-  directionSelect.style.padding = "6px";
-
-  deadheadCheckbox.addEventListener("change", () => {
-    directionSelect.style.display = deadheadCheckbox.checked ? "block" : "none";
-  });
-
-  deadheadWrapper.appendChild(directionSelect);
-
-  newDropdown.onchange = function () {
-    if (newDropdown.value !== "") {
-      layoverWrapper.style.display = "flex";
-      deadheadWrapper.style.display = "flex";
-      addRouteDropdown();
-    } else {
-      layoverWrapper.style.display = "none";
-      deadheadWrapper.style.display = "none";
-      layoverCheckbox.checked = true;
-      deadheadCheckbox.checked = false;
-      directionSelect.style.display = "none";
-      directionSelect.value = "";
-    }
-  };
-
   const deleteBtn = document.createElement("button");
+  deleteBtn.className = "deleteBtn";
   deleteBtn.textContent = "✖";
-  deleteBtn.style.background = "#cccccc";
-  deleteBtn.style.color = "black";
-  deleteBtn.style.border = "none";
-  deleteBtn.style.borderRadius = "4px";
-  deleteBtn.style.padding = "2px 4px";
-  deleteBtn.style.fontSize = "11px";
-  deleteBtn.style.cursor = "pointer";
-  deleteBtn.style.width = "auto";
-  deleteBtn.style.minWidth = "unset";
-  deleteBtn.style.display = "inline-flex";
-  deleteBtn.style.alignItems = "center";
-  deleteBtn.style.justifyContent = "center";
   deleteBtn.title = "Remove this flight";
   deleteBtn.onclick = () => {
     const wrappers = document.querySelectorAll(".routeWrapper");
@@ -200,11 +223,88 @@ function addRouteDropdown() {
     else alert("You must have at least one flight!");
   };
 
-  wrapper.appendChild(label);
-  wrapper.appendChild(newDropdown);
-  wrapper.appendChild(layoverWrapper);
-  wrapper.appendChild(deadheadWrapper);
-  wrapper.appendChild(deleteBtn);
+  rowTop.appendChild(newDropdown);
+  rowTop.appendChild(deleteBtn);
+  wrapper.appendChild(rowTop);
+
+  // Row 2: Options under the flight (Layover + DHC)
+  const optionsRow = document.createElement("div");
+  optionsRow.className = "routeOptions";
+  optionsRow.style.display = "none"; // hidden until a flight chosen
+
+  // Layover group
+  const layGroup = document.createElement("div");
+  layGroup.className = "optGroup";
+  const layCheckbox = document.createElement("input");
+  layCheckbox.type = "checkbox";
+  layCheckbox.className = "layoverCheckbox";
+  layCheckbox.checked = true;
+
+  const layLbl = document.createElement("label");
+  layLbl.textContent = "Layover?";
+  layLbl.prepend(layCheckbox);
+
+  const layHours = document.createElement("select");
+  layHours.className = "layoverDuration pill";
+  layHours.innerHTML = `
+    <option value="24">24 hrs</option>
+    <option value="48">48 hrs</option>
+    <option value="72">72 hrs</option>
+  `;
+  layHours.value = "24"; // default
+  layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
+  layCheckbox.addEventListener("change", () => {
+    layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
+    if (layCheckbox.checked) layHours.value = "24"; // reset to default when (re)checked
+  });
+
+  layGroup.appendChild(layLbl);
+  layGroup.appendChild(layHours);
+
+  // DHC group
+  const dhcGroup = document.createElement("div");
+  dhcGroup.className = "optGroup";
+  const dhcCheckbox = document.createElement("input");
+  dhcCheckbox.type = "checkbox";
+  dhcCheckbox.className = "deadheadCheckbox";
+
+  const dhcLbl = document.createElement("label");
+  dhcLbl.textContent = "DHC?";
+  dhcLbl.prepend(dhcCheckbox);
+
+  const dirSelect = document.createElement("select");
+  dirSelect.className = "deadheadDirection pill";
+  dirSelect.innerHTML = `
+    <option value="">-- Operating? --</option>
+    <option value="outbound">Outbound</option>
+    <option value="inbound">Inbound</option>
+  `;
+  dirSelect.style.display = "none";
+  dhcCheckbox.addEventListener("change", () => {
+    dirSelect.style.display = dhcCheckbox.checked ? "inline-block" : "none";
+    if (!dhcCheckbox.checked) dirSelect.value = "";
+  });
+
+  dhcGroup.appendChild(dhcLbl);
+  dhcGroup.appendChild(dirSelect);
+
+  optionsRow.appendChild(layGroup);
+  optionsRow.appendChild(dhcGroup);
+  wrapper.appendChild(optionsRow);
+
+  // Show/hide row-2 options based on selection
+  newDropdown.onchange = function () {
+    optionsRow.style.display = newDropdown.value !== "" ? "flex" : "none";
+    if (newDropdown.value === "") {
+      // reset options when cleared
+      layCheckbox.checked = true;
+      layHours.value = "24";
+      layHours.style.display = "inline-block";
+      dhcCheckbox.checked = false;
+      dirSelect.style.display = "none";
+      dirSelect.value = "";
+    }
+  };
 
   container.appendChild(wrapper);
 }
@@ -229,6 +329,7 @@ function calculateIncome() {
     const route = wrapper.querySelector(".routeDropdown").value;
     const isDeadhead = wrapper.querySelector(".deadheadCheckbox").checked;
     const hasLayover = wrapper.querySelector(".layoverCheckbox")?.checked ?? true;
+    const layoverHours = parseInt(wrapper.querySelector(".layoverDuration")?.value || "24", 10);
     const direction = wrapper.querySelector(".deadheadDirection").value;
 
     const selectedData = dataArray.find(r => r.Routes === route);
@@ -253,24 +354,25 @@ function calculateIncome() {
     const basePay       = operatedHours * 250;
     const sickLeavePay  = operatedHours * sickLeaveMultiplier[sickLeave];
 
-    // Sector allowance: 300 per operated sector
+    // Sector allowance: 300 per operated sector (1 if DHC, 2 if not)
     const sectorAllowance = isDeadhead ? 300 : 600;
 
     const commission    = includeCommission ? 500 : 0;
 
-    // Transportation logic
+    // Transportation logic (DEL or PVG => 300, or DHC with no layover => 300; else 600)
     let transportationAllowance;
-    if (route === "DEL" || (isDeadhead && !hasLayover)) {
+    if (route === "DEL" || route === "PVG" || (isDeadhead && !hasLayover)) {
       transportationAllowance = 300;
     } else {
       transportationAllowance = 600;
     }
 
+    // Overnight allowance: allowed with or without DHC, but not for DEL
+    // 24h => 2880, 48h => 5760, 72h => 8640
     let overnightAllowance = 0;
-    if (!isDeadhead && hasLayover && route !== "DEL") {
-      overnightAllowance = 2880;
-      if (route.endsWith("2")) overnightAllowance *= 2;
-      if (route.endsWith("3")) overnightAllowance *= 3;
+    if (hasLayover && route !== "DEL") {
+      const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
+      overnightAllowance = 2880 * multiplier;
     }
 
     const deadheadPay = deadheadHours * 250;
@@ -296,6 +398,8 @@ function calculateIncome() {
 
 document.addEventListener("DOMContentLoaded", function () {
   createFirstDropdown();
+  document.getElementById("addFlightBtn").addEventListener("click", addRouteDropdown);
+
   const images = ["img1.jpg","img2.jpg","img3.jpg","img4.jpg","img5.jpg","img6.jpg","img7.jpg","img8.jpg","img9.jpg","img10.jpg"];
   document.getElementById("randomImage").src = images[Math.floor(Math.random() * images.length)];
 });
