@@ -382,9 +382,9 @@ function calculateIncome() {
     // Transportation logic (DEL or PVG => 300, or DHC with no layover => 300; else 600)
     let transportationAllowance;
     if (route === "DEL" || route === "PVG" || (isDeadhead && !hasLayover)) {
-      transportationAllowance = 300;
+      transportationAllowance = 350;
     } else {
-      transportationAllowance = 600;
+      transportationAllowance = 700;
     }
 
     // Overnight allowance: allowed with or without DHC, but not for DEL
@@ -434,6 +434,7 @@ function resetForm() {
   </div>
 </body>
 </html>
+
 
 
 
