@@ -145,7 +145,8 @@ button:not(#addFlightBtn):not(.deleteBtn) {
 </head>
 <body>
   <div class="container">
-    <h2>Calculator (Mother's day update)</h2>
+    <h2>Calculator
+	(TOWNHALL's update)</h2>
 
     <div id="routeContainer"></div>
     <button id="addFlightBtn" type="button">+ Add flight</button>
@@ -379,32 +380,36 @@ function calculateIncome() {
 
     const commission    = includeCommission ? 500 : 0;
 
-    // Transportation logic (DEL or PVG => 300, or DHC with no layover => 300; else 600)
-    let transportationAllowance;
-    if (route === "DEL" || route === "PVG" || (isDeadhead && !hasLayover)) {
-      transportationAllowance = 350;
-    } else {
-      transportationAllowance = 700;
-    }
+    // ✅ Transportation: 350 per operated sector ONLY.
+    //    Operate 1 sector => 350; Operate 2 sectors => 700.
+    const operatedSectors = isDeadhead ? 1 : 2;
+    const transportationAllowance = 350 * operatedSectors;
 
     // Overnight allowance: allowed with or without DHC, but not for DEL
     // 24h => 2880, 48h => 5760, 72h => 8640
     let overnightAllowance = 0;
     if (hasLayover) {
-      const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
-      overnightAllowance = 2880 * multiplier;
+    const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
+    overnightAllowance = 2880 * multiplier;
+    }
+
+    // ✅ Add 1000 extra if PVG with NO layover
+    let extraAllowance = 0;
+    if (route === "PVG" && !hasLayover) {
+    extraAllowance = 1000;
     }
 
     const deadheadPay = deadheadHours * 250;
 
     const routeIncome =
-      basePay +
-      sickLeavePay +
-      sectorAllowance +
-      transportationAllowance +
-      commission +
-      overnightAllowance +
-      deadheadPay;
+    basePay +
+    sickLeavePay +
+    sectorAllowance +
+    transportationAllowance +
+    commission +
+    overnightAllowance +
+    extraAllowance + // 👈 add this line
+    deadheadPay;
 
     totalIncome += routeIncome;
 
@@ -434,8 +439,4 @@ function resetForm() {
   </div>
 </body>
 </html>
-
-
-
-
 
