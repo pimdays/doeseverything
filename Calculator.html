@@ -390,7 +390,7 @@ function calculateIncome() {
     // Overnight allowance: allowed with or without DHC, but not for DEL
     // 24h => 2880, 48h => 5760, 72h => 8640
     let overnightAllowance = 0;
-    if (hasLayover && route !== "DEL") {
+    if (hasLayover) {
       const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
       overnightAllowance = 2880 * multiplier;
     }
@@ -434,6 +434,7 @@ function resetForm() {
   </div>
 </body>
 </html>
+
 
 
 
