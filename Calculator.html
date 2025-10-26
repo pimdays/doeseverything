@@ -176,33 +176,29 @@ button:not(#addFlightBtn):not(.deleteBtn) {
     <img src="qr.jpg" class="qr-image" alt="QR Image">
   </div>
 
-  <script>
+<script>
 const dataArray = [
-  { 'Routes': 'CTS', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.17 },
+  { 'Routes': 'CTS', 'Block hours Outbound': 6.08, 'Block hours Inbound': 8.17 },
   { 'Routes': 'ICN', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
   { 'Routes': 'NRT', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
-  { 'Routes': 'KIX', 'Block hours Outbound': 5.42, 'Block hours Inbound': 6.50 },
-  { 'Routes': 'PVG', 'Block hours Outbound': 4.42, 'Block hours Inbound': 4.75 },
-  { 'Routes': 'NGO', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.83 },
-  { 'Routes': 'DEL', 'Block hours Outbound': 4.67, 'Block hours Inbound': 4.25 },
-  /* entries ending with 2/3 remain in data but are filtered out from dropdown, block hours not updated*/
-  { 'Routes': 'CTS2', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
-  { 'Routes': 'ICN2', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
-  { 'Routes': 'NRT2', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
-  { 'Routes': 'KIX2', 'Block hours Outbound': 5.50, 'Block hours Inbound': 6.50 },
-  { 'Routes': 'PVG2', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
-  { 'Routes': 'NGO2', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
-  { 'Routes': 'CTS3', 'Block hours Outbound': 6.67, 'Block hours Inbound': 8.08 },
-  { 'Routes': 'ICN3', 'Block hours Outbound': 5.58, 'Block hours Inbound': 6.17 },
-  { 'Routes': 'NRT3', 'Block hours Outbound': 6.08, 'Block hours Inbound': 7.42 },
-  { 'Routes': 'KIX3', 'Block hours Outbound': 5.50, 'Block hours Inbound': 6.50 },
-  { 'Routes': 'PVG3', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.75 },
-  { 'Routes': 'NGO3', 'Block hours Outbound': 5.67, 'Block hours Inbound': 6.75 },
+  { 'Routes': 'KIX', 'Block hours Outbound': 5.42, 'Block hours Inbound': 5.50 },
+  { 'Routes': 'PVG', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.67 },
+  { 'Routes': 'NGO', 'Block hours Outbound': 5.83, 'Block hours Inbound': 6.75 },
+  { 'Routes': 'DEL', 'Block hours Outbound': 4.50, 'Block hours Inbound': 4.08 },
 ];
+
+function toMinutes(decimalHours) {
+  // Convert decimal hours to whole minutes (0.75 hr -> 45 min)
+  return Math.round(decimalHours * 60);
+}
+function formatHM(totalMinutes) {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h}h ${String(m).padStart(2, '0')}m`;
+}
 
 function populateDropdown(dropdown) {
   dropdown.innerHTML = '<option value="">-- Select your Flight --</option>';
-  // Only include routes that DO NOT end with "2" or "3"
   const filtered = dataArray
     .map(r => r.Routes)
     .filter(code => !(code.endsWith('2') || code.endsWith('3')));
@@ -220,13 +216,11 @@ function addRouteDropdown() {
   const wrapper = document.createElement("div");
   wrapper.className = "routeWrapper";
 
-  // Label (row header)
   const label = document.createElement("div");
   label.className = "flightLabel";
   label.textContent = "Flight";
   wrapper.appendChild(label);
 
-  // Row 1: flight dropdown (fills) + delete (fixed)
   const rowTop = document.createElement("div");
   rowTop.className = "routeRowTop";
 
@@ -248,12 +242,10 @@ function addRouteDropdown() {
   rowTop.appendChild(deleteBtn);
   wrapper.appendChild(rowTop);
 
-  // Row 2: Options under the flight (Layover + DHC)
   const optionsRow = document.createElement("div");
   optionsRow.className = "routeOptions";
-  optionsRow.style.display = "none"; // hidden until a flight chosen
+  optionsRow.style.display = "none";
 
-  // Layover group
   const layGroup = document.createElement("div");
   layGroup.className = "optGroup";
   const layCheckbox = document.createElement("input");
@@ -272,17 +264,16 @@ function addRouteDropdown() {
     <option value="48">48 hrs</option>
     <option value="72">72 hrs</option>
   `;
-  layHours.value = "24"; // default
+  layHours.value = "24";
   layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
   layCheckbox.addEventListener("change", () => {
     layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
-    if (layCheckbox.checked) layHours.value = "24"; // reset to default when (re)checked
+    if (layCheckbox.checked) layHours.value = "24";
   });
 
   layGroup.appendChild(layLbl);
   layGroup.appendChild(layHours);
 
-  // DHC group
   const dhcGroup = document.createElement("div");
   dhcGroup.className = "optGroup";
   const dhcCheckbox = document.createElement("input");
@@ -313,11 +304,9 @@ function addRouteDropdown() {
   optionsRow.appendChild(dhcGroup);
   wrapper.appendChild(optionsRow);
 
-  // Show/hide row-2 options based on selection
   newDropdown.onchange = function () {
     optionsRow.style.display = newDropdown.value !== "" ? "flex" : "none";
     if (newDropdown.value === "") {
-      // reset options when cleared
       layCheckbox.checked = true;
       layHours.value = "24";
       layHours.style.display = "inline-block";
@@ -336,7 +325,7 @@ function createFirstDropdown() {
 
 function calculateIncome() {
   const sickLeave = document.getElementById("sickLeave").value;
-  let totalIncome = 0, totalBlockHours = 0;
+  let totalIncome = 0, totalBlockMinutes = 0;
   const sickLeaveMultiplier = {
     "No SL": 100,
     "1 Day SL": 90,
@@ -361,64 +350,71 @@ function calculateIncome() {
       return;
     }
 
-    const outbound = selectedData["Block hours Outbound"];
-    const inbound  = selectedData["Block hours Inbound"];
-    let operatedHours = 0, deadheadHours = 0;
+    // Convert each leg to minutes first
+    const outboundMin = toMinutes(selectedData["Block hours Outbound"]);
+    const inboundMin  = toMinutes(selectedData["Block hours Inbound"]);
 
+    let operatedMin = 0, deadheadMin = 0;
     if (!isDeadhead) {
-      operatedHours = outbound + inbound;
+      operatedMin = outboundMin + inboundMin; // operate both
     } else {
-      operatedHours = direction === "outbound" ? outbound : inbound;
-      deadheadHours = direction === "outbound" ? inbound : outbound;
+      if (direction === "outbound") {
+        operatedMin = outboundMin;
+        deadheadMin = inboundMin;
+      } else {
+        operatedMin = inboundMin;
+        deadheadMin = outboundMin;
+      }
     }
 
-    const basePay       = operatedHours * 250;
-    const sickLeavePay  = operatedHours * sickLeaveMultiplier[sickLeave];
+    // Use minutes/60 wherever you previously used hours
+    const operatedHours = operatedMin / 60;
+    const deadheadHours = deadheadMin / 60;
 
-    // Sector allowance: 300 per operated sector (1 if DHC, 2 if not)
+    const basePay      = operatedHours * 250;
+    const sickLeavePay = operatedHours * sickLeaveMultiplier[sickLeave];
+
     const sectorAllowance = isDeadhead ? 300 : 600;
+    const commission      = includeCommission ? 500 : 0;
 
-    const commission    = includeCommission ? 500 : 0;
-
-    // ✅ Transportation: 350 per operated sector ONLY.
-    //    Operate 1 sector => 350; Operate 2 sectors => 700.
     const operatedSectors = isDeadhead ? 1 : 2;
     const transportationAllowance = 350 * operatedSectors;
 
-    // Overnight allowance: allowed with or without DHC, but not for DEL
-    // 24h => 2880, 48h => 5760, 72h => 8640
     let overnightAllowance = 0;
     if (hasLayover) {
-    const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
-    overnightAllowance = 2880 * multiplier;
+      const multiplier = layoverHours === 72 ? 3 : layoverHours === 48 ? 2 : 1;
+      overnightAllowance = 2880 * multiplier;
     }
 
-    // ✅ Add 1000 extra if PVG with NO layover
     let extraAllowance = 0;
     if (route === "PVG" && !hasLayover) {
-    extraAllowance = 1000;
+      extraAllowance = 1000;
     }
 
     const deadheadPay = deadheadHours * 250;
 
     const routeIncome =
-    basePay +
-    sickLeavePay +
-    sectorAllowance +
-    transportationAllowance +
-    commission +
-    overnightAllowance +
-    extraAllowance + // 👈 add this line
-    deadheadPay;
+      basePay +
+      sickLeavePay +
+      sectorAllowance +
+      transportationAllowance +
+      commission +
+      overnightAllowance +
+      extraAllowance +
+      deadheadPay;
 
     totalIncome += routeIncome;
 
-    // Block Hours = operating only
-    totalBlockHours += operatedHours;
+    // Sum block time in MINUTES (operating only)
+    totalBlockMinutes += operatedMin;
   }
 
-  document.getElementById("incomeResult").textContent = `Total Income: ${totalIncome.toFixed(2)}`;
-  document.getElementById("blockHoursResult").textContent = `Total Block Hours: ${totalBlockHours.toFixed(2)}`;
+  document.getElementById("incomeResult").textContent =
+    `Total Income: ${totalIncome.toFixed(2)}`;
+
+  // ✅ Show as H:MM
+  document.getElementById("blockHoursResult").textContent =
+    `Total Block Hours: ${formatHM(totalBlockMinutes)}`;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -432,11 +428,10 @@ document.addEventListener("DOMContentLoaded", function () {
 function resetForm() {
   location.reload();
 }
-  </script>
+</script>
 
   <div class="visitor-counter">
     <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpimdays.github.io%2Fdoeseverything%2FCalculator&label=Visits&labelColor=%23d9e3f0&countColor=%23d9e3f0" alt="Visitor Counter">
   </div>
 </body>
 </html>
-
