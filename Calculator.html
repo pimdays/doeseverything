@@ -145,8 +145,8 @@ button:not(#addFlightBtn):not(.deleteBtn) {
 </head>
 <body>
   <div class="container">
-    <h2>Calculator
-	(TOWNHALL's update)</h2>
+    <h2>Calculator<br>
+	(Routes Updated)</h2>
 
     <div id="routeContainer"></div>
     <button id="addFlightBtn" type="button">+ Add flight</button>
@@ -185,6 +185,10 @@ const dataArray = [
   { 'Routes': 'PVG', 'Block hours Outbound': 4.25, 'Block hours Inbound': 4.67 },
   { 'Routes': 'NGO', 'Block hours Outbound': 5.83, 'Block hours Inbound': 6.75 },
   { 'Routes': 'DEL', 'Block hours Outbound': 4.50, 'Block hours Inbound': 4.08 },
+  { 'Routes': 'SDJ', 'Block hours Outbound': 6.25, 'Block hours Inbound': 7.50 },
+  { 'Routes': 'ALA', 'Block hours Outbound': 7.17, 'Block hours Inbound': 6.67 },
+  { 'Routes': 'RUH', 'Block hours Outbound': 8.33, 'Block hours Inbound': 7.17 },
+  { 'Routes': 'HRB', 'Block hours Outbound': 5.83, 'Block hours Inbound': 6.50 },
 ];
 
 function toMinutes(decimalHours) {
@@ -435,3 +439,4 @@ function resetForm() {
   </div>
 </body>
 </html>
+
