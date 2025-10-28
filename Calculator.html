@@ -20,22 +20,22 @@
       box-sizing: border-box;
     }
     /* Global buttons (but NOT the Add Flight button) */
-button:not(#addFlightBtn):not(.deleteBtn) {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  height: 40px;
-  box-sizing: border-box;
-  background-color: #D32F2F;
-  color: white;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  transition: .3s;
-}
+    button:not(#addFlightBtn):not(.deleteBtn) {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      height: 40px;
+      box-sizing: border-box;
+      background-color: #D32F2F;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: .3s;
+    }
 
     .result { font-size: 20px; font-weight: bold; margin-top: 20px; color: #000; }
     .note { font-size: 13px; color: #555; margin-top: 4px; }
@@ -71,15 +71,15 @@ button:not(#addFlightBtn):not(.deleteBtn) {
       align-items: center;
     }
     .routeDropdown {
-      flex: 1;            /* ⬅️ take all available width */
-      min-width: 0;       /* allow proper shrinking on small screens */
+      flex: 1;
+      min-width: 0;
       height: 40px;
       font-size: 14px;
       padding: 6px 8px;
       margin-top: 0;
     }
     .deleteBtn {
-      flex: 0 0 32px;     /* ⬅️ fixed 32px area at the right */
+      flex: 0 0 32px;
       width: 32px;
       height: 32px;
       padding: 0;
@@ -128,25 +128,23 @@ button:not(#addFlightBtn):not(.deleteBtn) {
     }
 
     /* Make the Add Flight button look subtle/secondary */
-#addFlightBtn {
-  background: transparent;
-  border: 1px dashed #aaa;
-  color: #555;
-  font-weight: normal;
-  margin-top: 16px;
-}
+    #addFlightBtn {
+      background: transparent;
+      border: 1px dashed #aaa;
+      color: #555;
+      font-weight: normal;
+      margin-top: 16px;
+    }
 
-#addFlightBtn:hover {
-  background: #f2f2f2;
-  border-color: #888;
-}
-
+    #addFlightBtn:hover {
+      background: #f2f2f2;
+      border-color: #888;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Calculator<br>
-	(Routes Updated)</h2>
+    <h2>Calculator<br>(Routes Updated)</h2>
 
     <div id="routeContainer"></div>
     <button id="addFlightBtn" type="button">+ Add flight</button>
@@ -192,7 +190,6 @@ const dataArray = [
 ];
 
 function toMinutes(decimalHours) {
-  // Convert decimal hours to whole minutes (0.75 hr -> 45 min)
   return Math.round(decimalHours * 60);
 }
 function formatHM(totalMinutes) {
@@ -270,6 +267,8 @@ function addRouteDropdown() {
   `;
   layHours.value = "24";
   layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
+
+  /* ✅ Simple checkbox handler (no forcing) */
   layCheckbox.addEventListener("change", () => {
     layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
     if (layCheckbox.checked) layHours.value = "24";
@@ -308,15 +307,26 @@ function addRouteDropdown() {
   optionsRow.appendChild(dhcGroup);
   wrapper.appendChild(optionsRow);
 
+  /* ✅ Initialize: DEL starts unchecked (user can re-check) */
   newDropdown.onchange = function () {
     optionsRow.style.display = newDropdown.value !== "" ? "flex" : "none";
+
     if (newDropdown.value === "") {
+      // reset to defaults
       layCheckbox.checked = true;
       layHours.value = "24";
       layHours.style.display = "inline-block";
       dhcCheckbox.checked = false;
       dirSelect.style.display = "none";
       dirSelect.value = "";
+    } else if (newDropdown.value === "DEL") {
+      layCheckbox.checked = false;      // start unchecked
+      layHours.style.display = "none";  // hidden until user checks
+    } else {
+      // normal routes default to layover 24h
+      layCheckbox.checked = true;
+      layHours.value = "24";
+      layHours.style.display = "inline-block";
     }
   };
 
@@ -354,13 +364,12 @@ function calculateIncome() {
       return;
     }
 
-    // Convert each leg to minutes first
     const outboundMin = toMinutes(selectedData["Block hours Outbound"]);
     const inboundMin  = toMinutes(selectedData["Block hours Inbound"]);
 
     let operatedMin = 0, deadheadMin = 0;
     if (!isDeadhead) {
-      operatedMin = outboundMin + inboundMin; // operate both
+      operatedMin = outboundMin + inboundMin;
     } else {
       if (direction === "outbound") {
         operatedMin = outboundMin;
@@ -371,7 +380,6 @@ function calculateIncome() {
       }
     }
 
-    // Use minutes/60 wherever you previously used hours
     const operatedHours = operatedMin / 60;
     const deadheadHours = deadheadMin / 60;
 
@@ -408,15 +416,12 @@ function calculateIncome() {
       deadheadPay;
 
     totalIncome += routeIncome;
-
-    // Sum block time in MINUTES (operating only)
-    totalBlockMinutes += operatedMin;
+    totalBlockMinutes += operatedMin; // operating only
   }
 
   document.getElementById("incomeResult").textContent =
     `Total Income: ${totalIncome.toFixed(2)}`;
 
-  // ✅ Show as H:MM
   document.getElementById("blockHoursResult").textContent =
     `Total Block Hours: ${formatHM(totalBlockMinutes)}`;
 }
@@ -439,4 +444,3 @@ function resetForm() {
   </div>
 </body>
 </html>
-
