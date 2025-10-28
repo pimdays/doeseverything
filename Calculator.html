@@ -157,9 +157,7 @@
       <option>2 Days in Hospital</option>
     </select>
 
-    <label for="includeCommission" style="margin-top:10px;font-weight:bold;font-size:16px;display:block;">
-      <input type="checkbox" id="includeCommission"> Include Commission
-    </label>
+    <!-- Commission removed -->
 
     <button onclick="calculateIncome()">Calculate</button>
 
@@ -268,7 +266,7 @@ function addRouteDropdown() {
   layHours.value = "24";
   layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
 
-  /* ✅ Simple checkbox handler (no forcing) */
+  /* Simple checkbox handler (no forcing) */
   layCheckbox.addEventListener("change", () => {
     layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
     if (layCheckbox.checked) layHours.value = "24";
@@ -307,7 +305,7 @@ function addRouteDropdown() {
   optionsRow.appendChild(dhcGroup);
   wrapper.appendChild(optionsRow);
 
-  /* ✅ Initialize: DEL starts unchecked (user can re-check) */
+  /* Initialize: DEL starts unchecked (user can re-check) */
   newDropdown.onchange = function () {
     optionsRow.style.display = newDropdown.value !== "" ? "flex" : "none";
 
@@ -346,7 +344,6 @@ function calculateIncome() {
     "2 Days SL": 0,
     "2 Days in Hospital": 60
   };
-  const includeCommission = document.getElementById("includeCommission").checked;
 
   const wrappers = document.querySelectorAll(".routeWrapper");
   for (const wrapper of wrappers) {
@@ -387,7 +384,6 @@ function calculateIncome() {
     const sickLeavePay = operatedHours * sickLeaveMultiplier[sickLeave];
 
     const sectorAllowance = isDeadhead ? 300 : 600;
-    const commission      = includeCommission ? 500 : 0;
 
     const operatedSectors = isDeadhead ? 1 : 2;
     const transportationAllowance = 350 * operatedSectors;
@@ -410,7 +406,6 @@ function calculateIncome() {
       sickLeavePay +
       sectorAllowance +
       transportationAllowance +
-      commission +
       overnightAllowance +
       extraAllowance +
       deadheadPay;
