@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>When should I</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --border-strong: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 16px 16px 20px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .input-card {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+    }
+
+    .input-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+
+    .field label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .field input,
+    .field select {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      font-size: 0.85rem;
+      background: #ffffff;
+    }
+
+    .time-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .steps {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      height: 50px;
+    }
+
+    .step-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .step-time {
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .step-time.empty { color: #9ca3af; }
+
+    /* ▼▼▼ BIGGER LEAVE STEP ▼▼▼ */
+    .step.leave {
+      padding: 18px 18px;
+      border: 2px solid var(--accent);
+      background: var(--accent-soft);
+      height: 70px;
+      border-radius: 16px;
+    }
+
+    .step.leave .step-label {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .step.leave .step-time {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    /* ▲▲▲ BIGGER LEAVE STEP ▲▲▲ */
+
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <header>
+      <h1>When should I...</h1>
+    </header>
+
+    <section class="input-card">
+      <div class="input-label">Report time</div>
+      <div class="input-grid">
+        <div class="field">
+          <label>Date</label>
+          <input id="reportDate" type="date" />
+        </div>
+
+        <div class="field">
+          <label>Time</label>
+          <div class="time-row">
+            <select id="reportHour">
+              <option value="">HH</option>
+              <option>00</option><option>01</option><option>02</option><option>03</option>
+              <option>04</option><option>05</option><option>06</option><option>07</option>
+              <option>08</option><option>09</option><option>10</option><option>11</option>
+              <option>12</option><option>13</option><option>14</option><option>15</option>
+              <option>16</option><option>17</option><option>18</option><option>19</option>
+              <option>20</option><option>21</option><option>22</option><option>23</option>
+            </select>
+            <span>:</span>
+            <select id="reportMinute">
+              <option value="">MM</option>
+              <option>00</option><option>05</option><option>10</option><option>15</option>
+              <option>20</option><option>25</option><option>30</option><option>35</option>
+              <option>40</option><option>45</option><option>50</option><option>55</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps" id="steps"></section>
+  </div>
+
+  <script>
+    const stepsConfig = [
+      { id: "prep",  label: "Prep" },
+      { id: "sleep", label: "Sleep" },
+      { id: "eat",   label: "Eat" },
+      { id: "dress", label: "Get dressed" },
+      { id: "leave", label: "Leave", emphasize: true }
+    ];
+
+    const durations = {
+      leave: "01:30",
+      dress: "01:30",
+      eat:   "00:30",
+      sleep: "08:30",
+      prep:  "03:00"
+    };
+
+    const stepsContainer   = document.getElementById("steps");
+    const reportDateInput  = document.getElementById("reportDate");
+    const reportHourSelect = document.getElementById("reportHour");
+    const reportMinuteSel  = document.getElementById("reportMinute");
+
+    function parseDuration(str) {
+      const [h, m] = str.split(":").map(Number);
+      return (h * 60 + m) * 60 * 1000;
+    }
+
+    function formatTime(dt) {
+      return String(dt.getHours()).padStart(2, "0")
+           + ":" +
+           String(dt.getMinutes()).padStart(2, "0");
+    }
+
+    function buildStepsUI() {
+      stepsContainer.innerHTML = "";
+      stepsConfig.forEach(step => {
+        const div = document.createElement("div");
+        div.className = "step" + (step.emphasize ? " leave" : "");
+        div.innerHTML = `
+          <div class="step-label">${step.label}</div>
+          <div class="step-time empty" id="time-${step.id}">—</div>
+        `;
+        stepsContainer.appendChild(div);
+      });
+    }
+
+    function recalc() {
+      const dateVal = reportDateInput.value;
+      const hourVal = reportHourSelect.value;
+      const minVal  = reportMinuteSel.value;
+
+      stepsConfig.forEach(step => {
+        const el = document.getElementById(`time-${step.id}`);
+        el.textContent = "—";
+        el.classList.add("empty");
+      });
+
+      if (!dateVal || !hourVal || !minVal) return;
+
+      const report = new Date(`${dateVal}T${hourVal}:${minVal}`);
+      if (isNaN(report.getTime())) return;
+
+      let current = new Date(report);
+      const times = {};
+
+      current = new Date(current.getTime() - parseDuration(durations.leave));
+      times.leave = new Date(current);
+
+      current = new Date(current.getTime() - parseDuration(durations.dress));
+      times.dress = new Date(current);
+
+      current = new Date(current.getTime() - parseDuration(durations.eat));
+      times.eat = new Date(current);
+
+      current = new Date(current.getTime() - parseDuration(durations.sleep));
+      times.sleep = new Date(current);
+
+      current = new Date(current.getTime() - parseDuration(durations.prep));
+      times.prep = new Date(current);
+
+      Object.entries(times).forEach(([id, dt]) => {
+        const el = document.getElementById(`time-${id}`);
+        el.textContent = formatTime(dt);
+        el.classList.remove("empty");
+      });
+    }
+
+    buildStepsUI();
+
+    reportDateInput.addEventListener("input", recalc);
+    reportHourSelect.addEventListener("change", recalc);
+    reportMinuteSel.addEventListener("change", recalc);
+  </script>
+</body>
+</html>
