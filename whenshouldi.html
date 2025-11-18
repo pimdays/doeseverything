@@ -23,31 +23,32 @@
       font-family: system-ui, sans-serif;
       background: var(--bg);
       color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      padding: 16px;
-      min-height: 100vh;
     }
 
+    /* App container now fills width, no floating card */
     .app {
       width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border-radius: 18px;
-      padding: 16px 16px 20px;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 32px;
+    }
+
+    header {
+      padding: 20px 16px 8px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 600;
     }
 
+    /* Sections share same side padding so it feels app-like */
     .input-card {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 12px;
+      margin-top: 4px;
+      margin-inline: 16px;
+      padding: 14px 14px 16px;
+      border-radius: 14px;
       border: 1px solid var(--border);
       background: #f9fafb;
     }
@@ -56,6 +57,7 @@
       font-size: 0.78rem;
       color: var(--text-muted);
       margin-bottom: 6px;
+      font-weight: 500;
     }
 
     .input-grid {
@@ -64,7 +66,11 @@
       gap: 8px;
     }
 
-    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
     .field label {
       font-size: 0.75rem;
@@ -73,11 +79,18 @@
 
     .field input,
     .field select {
-      padding: 8px 10px;
+      padding: 9px 10px;
       border-radius: 10px;
       border: 1px solid var(--border-strong);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       background: #ffffff;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12);
     }
 
     .time-row {
@@ -86,14 +99,21 @@
       align-items: center;
     }
 
+    .time-row span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
     .steps {
       margin-top: 16px;
+      padding-inline: 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
     .step {
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -101,7 +121,6 @@
       border-radius: 12px;
       background: #ffffff;
       border: 1px solid var(--border);
-      height: 50px;
     }
 
     .step-label {
@@ -118,10 +137,9 @@
 
     /* ▼▼▼ BIGGER LEAVE STEP ▼▼▼ */
     .step.leave {
-      padding: 18px 18px;
+      padding: 18px 16px;
       border: 2px solid var(--accent);
       background: var(--accent-soft);
-      height: 70px;
       border-radius: 16px;
     }
 
@@ -136,6 +154,11 @@
     }
     /* ▲▲▲ BIGGER LEAVE STEP ▲▲▲ */
 
+    @media (max-width: 480px) {
+      .step {
+        padding: 11px 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -208,9 +231,8 @@
     }
 
     function formatTime(dt) {
-      return String(dt.getHours()).padStart(2, "0")
-           + ":" +
-           String(dt.getMinutes()).padStart(2, "0");
+      return String(dt.getHours()).padStart(2, "0") + ":" +
+             String(dt.getMinutes()).padStart(2, "0");
     }
 
     function buildStepsUI() {
