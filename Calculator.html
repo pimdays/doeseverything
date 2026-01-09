@@ -385,8 +385,13 @@ function calculateIncome() {
 
     const sectorAllowance = isDeadhead ? 300 : 600;
 
-    const operatedSectors = isDeadhead ? 1 : 2;
-    const transportationAllowance = 350 * operatedSectors;
+    let transportationMultiplier = 2; // default: normal route
+
+    if (isDeadhead || route === "DEL") {
+      transportationMultiplier = 1;
+    }
+
+    const transportationAllowance = 350 * transportationMultiplier;
 
     let overnightAllowance = 0;
     if (hasLayover) {
@@ -439,3 +444,4 @@ function resetForm() {
   </div>
 </body>
 </html>
+
