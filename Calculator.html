@@ -8,7 +8,6 @@
     body { font-family: Arial, sans-serif; text-align: center; background-color: #ffffff; }
     .container { max-width: 520px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
 
-    /* Global controls (top selects/buttons) */
     select, button {
       width: 100%;
       padding: 12px;
@@ -19,7 +18,7 @@
       height: 40px;
       box-sizing: border-box;
     }
-    /* Global buttons (but NOT the Add Flight button) */
+
     button:not(#addFlightBtn):not(.deleteBtn) {
       width: 100%;
       padding: 12px;
@@ -44,7 +43,6 @@
     .qr-image { width: 100px; height: 100px; margin-top: 10px; }
     .visitor-counter { position: fixed; bottom: 10px; right: 10px; background: white; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,.2); }
 
-    /* Per-flight rows */
     .routeWrapper {
       display: grid;
       grid-template-columns: 1fr;
@@ -57,6 +55,7 @@
       background: #fafafa;
       text-align: left;
     }
+
     .flightLabel {
       font-weight: bold;
       font-size: 16px;
@@ -64,12 +63,12 @@
       margin-bottom: 6px;
     }
 
-    /* Row 1: flight dropdown fills line, delete fixed at end */
     .routeRowTop {
       display: flex;
       gap: 8px;
       align-items: center;
     }
+
     .routeDropdown {
       flex: 1;
       min-width: 0;
@@ -78,6 +77,7 @@
       padding: 6px 8px;
       margin-top: 0;
     }
+
     .deleteBtn {
       flex: 0 0 32px;
       width: 32px;
@@ -95,7 +95,6 @@
       margin-top: 0;
     }
 
-    /* Row 2: Layover + DHC */
     .routeOptions {
       grid-column: 1 / -1;
       display: flex;
@@ -103,6 +102,7 @@
       margin-top: 8px;
       flex-wrap: wrap;
     }
+
     .optGroup {
       display: flex;
       align-items: center;
@@ -112,14 +112,24 @@
       border: 1px solid #eee;
       border-radius: 8px;
     }
-    .optGroup label { font-size: 14px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+
+    .optGroup label {
+      font-size: 14px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .pill { padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; }
+
     .layoverDuration.pill {
       width: 110px !important;
       height: 36px;
       font-size: 14px;
       margin-top: 0;
     }
+
     .deadheadDirection.pill {
       width: 150px !important;
       height: 36px;
@@ -127,7 +137,6 @@
       margin-top: 0;
     }
 
-    /* Make the Add Flight button look subtle/secondary */
     #addFlightBtn {
       background: transparent;
       border: 1px dashed #aaa;
@@ -157,12 +166,11 @@
       <option>2 Days in Hospital</option>
     </select>
 
-    <!-- Commission removed -->
-
     <button onclick="calculateIncome()">Calculate</button>
 
     <div class="result" id="incomeResult">Total Income: </div>
     <div class="result" id="blockHoursResult">Total Block Hours: </div>
+    <div class="result" id="fdpResult">Total FDP: </div>
     <div class="note">(*Block hours include only operating hours)</div>
 
     <img src="reset-icon.png" onclick="resetForm()" style="width:20px;height:20px;cursor:pointer;display:block;margin:10px auto;" alt="Reset">
@@ -182,15 +190,25 @@ const dataArray = [
   { Routes: 'PVG', 'Block hours Outbound': 4.42, 'Block hours Inbound': 4.08 },
   { Routes: 'RUH', 'Block hours Outbound': 8.33, 'Block hours Inbound': 7.08 },
   { Routes: 'SDJ', 'Block hours Outbound': 6.58, 'Block hours Inbound': 7.08 },
+  { Routes: 'CTS', 'Block hours Outbound': 7.17, 'Block hours Inbound': 7.42 },
 ];
 
 function toMinutes(decimalHours) {
   return Math.round(decimalHours * 60);
 }
+
 function formatHM(totalMinutes) {
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   return `${h}h ${String(m).padStart(2, '0')}m`;
+}
+
+function getOutboundFDP(outboundMin) {
+  return outboundMin + 105;
+}
+
+function getInboundFDP(inboundMin) {
+  return inboundMin + 90;
 }
 
 function populateDropdown(dropdown) {
@@ -198,6 +216,7 @@ function populateDropdown(dropdown) {
   const filtered = dataArray
     .map(r => r.Routes)
     .filter(code => !(code.endsWith('2') || code.endsWith('3')));
+
   filtered.sort().forEach(route => {
     const opt = document.createElement("option");
     opt.value = route;
@@ -244,6 +263,7 @@ function addRouteDropdown() {
 
   const layGroup = document.createElement("div");
   layGroup.className = "optGroup";
+
   const layCheckbox = document.createElement("input");
   layCheckbox.type = "checkbox";
   layCheckbox.className = "layoverCheckbox";
@@ -261,19 +281,27 @@ function addRouteDropdown() {
     <option value="72">72 hrs</option>
   `;
   layHours.value = "24";
-  layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
-
-  /* Simple checkbox handler (no forcing) */
-  layCheckbox.addEventListener("change", () => {
-    layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
-    if (layCheckbox.checked) layHours.value = "24";
-  });
+  layHours.style.display = "inline-block";
 
   layGroup.appendChild(layLbl);
   layGroup.appendChild(layHours);
 
+  const qtGroup = document.createElement("div");
+  qtGroup.className = "optGroup";
+
+  const quickturnCheckbox = document.createElement("input");
+  quickturnCheckbox.type = "checkbox";
+  quickturnCheckbox.className = "quickturnCheckbox";
+
+  const qtLbl = document.createElement("label");
+  qtLbl.textContent = "Quickturn?";
+  qtLbl.prepend(quickturnCheckbox);
+
+  qtGroup.appendChild(qtLbl);
+
   const dhcGroup = document.createElement("div");
   dhcGroup.className = "optGroup";
+
   const dhcCheckbox = document.createElement("input");
   dhcCheckbox.type = "checkbox";
   dhcCheckbox.className = "deadheadCheckbox";
@@ -290,38 +318,64 @@ function addRouteDropdown() {
     <option value="inbound">Inbound</option>
   `;
   dirSelect.style.display = "none";
+
   dhcCheckbox.addEventListener("change", () => {
     dirSelect.style.display = dhcCheckbox.checked ? "inline-block" : "none";
     if (!dhcCheckbox.checked) dirSelect.value = "";
+  });
+
+  layCheckbox.addEventListener("change", () => {
+    layHours.style.display = layCheckbox.checked ? "inline-block" : "none";
+
+    if (layCheckbox.checked) {
+      layHours.value = "24";
+      quickturnCheckbox.checked = false;
+    }
+  });
+
+  quickturnCheckbox.addEventListener("change", () => {
+    if (quickturnCheckbox.checked) {
+      layCheckbox.checked = false;
+      layHours.style.display = "none";
+    } else {
+      layCheckbox.checked = true;
+      layHours.value = "24";
+      layHours.style.display = "inline-block";
+    }
   });
 
   dhcGroup.appendChild(dhcLbl);
   dhcGroup.appendChild(dirSelect);
 
   optionsRow.appendChild(layGroup);
+  optionsRow.appendChild(qtGroup);
   optionsRow.appendChild(dhcGroup);
   wrapper.appendChild(optionsRow);
 
-  /* Initialize: DEL starts unchecked (user can re-check) */
   newDropdown.onchange = function () {
     optionsRow.style.display = newDropdown.value !== "" ? "flex" : "none";
 
     if (newDropdown.value === "") {
-      // reset to defaults
       layCheckbox.checked = true;
       layHours.value = "24";
       layHours.style.display = "inline-block";
+
+      quickturnCheckbox.checked = false;
+
       dhcCheckbox.checked = false;
       dirSelect.style.display = "none";
       dirSelect.value = "";
     } else if (newDropdown.value === "DEL") {
-      layCheckbox.checked = false;      // start unchecked
-      layHours.style.display = "none";  // hidden until user checks
+      layCheckbox.checked = false;
+      layHours.style.display = "none";
+
+      quickturnCheckbox.checked = false;
     } else {
-      // normal routes default to layover 24h
       layCheckbox.checked = true;
       layHours.value = "24";
       layHours.style.display = "inline-block";
+
+      quickturnCheckbox.checked = false;
     }
   };
 
@@ -334,7 +388,10 @@ function createFirstDropdown() {
 
 function calculateIncome() {
   const sickLeave = document.getElementById("sickLeave").value;
-  let totalIncome = 0, totalBlockMinutes = 0;
+  let totalIncome = 0;
+  let totalBlockMinutes = 0;
+  let totalFDPMinutes = 0;
+
   const sickLeaveMultiplier = {
     "No SL": 100,
     "1 Day SL": 90,
@@ -343,10 +400,12 @@ function calculateIncome() {
   };
 
   const wrappers = document.querySelectorAll(".routeWrapper");
+
   for (const wrapper of wrappers) {
     const route = wrapper.querySelector(".routeDropdown").value;
     const isDeadhead = wrapper.querySelector(".deadheadCheckbox").checked;
     const hasLayover = wrapper.querySelector(".layoverCheckbox")?.checked ?? true;
+    const isQuickturn = wrapper.querySelector(".quickturnCheckbox")?.checked ?? false;
     const layoverHours = parseInt(wrapper.querySelector(".layoverDuration")?.value || "24", 10);
     const direction = wrapper.querySelector(".deadheadDirection").value;
 
@@ -361,33 +420,49 @@ function calculateIncome() {
     const outboundMin = toMinutes(selectedData["Block hours Outbound"]);
     const inboundMin  = toMinutes(selectedData["Block hours Inbound"]);
 
-    let operatedMin = 0, deadheadMin = 0;
+    const outboundFDP = getOutboundFDP(outboundMin);
+    const inboundFDP = getInboundFDP(inboundMin);
+
+    let operatedMin = 0;
+    let deadheadMin = 0;
+    let routeFDPMinutes = 0;
+
     if (!isDeadhead) {
       operatedMin = outboundMin + inboundMin;
+      routeFDPMinutes = outboundFDP + inboundFDP;
     } else {
       if (direction === "outbound") {
         operatedMin = outboundMin;
         deadheadMin = inboundMin;
+
+        if (isQuickturn) {
+          routeFDPMinutes = outboundFDP;
+        } else {
+          routeFDPMinutes = outboundFDP;
+        }
       } else {
         operatedMin = inboundMin;
         deadheadMin = outboundMin;
+
+        if (isQuickturn) {
+          routeFDPMinutes = outboundFDP + inboundFDP;
+        } else {
+          routeFDPMinutes = inboundFDP;
+        }
       }
     }
 
     const operatedHours = operatedMin / 60;
     const deadheadHours = deadheadMin / 60;
 
-    const basePay      = operatedHours * 250;
+    const basePay = operatedHours * 250;
     const sickLeavePay = operatedHours * sickLeaveMultiplier[sickLeave];
-
     const sectorAllowance = isDeadhead ? 300 : 600;
 
-    let transportationMultiplier = 2; // default: normal route
-
+    let transportationMultiplier = 2;
     if (isDeadhead || route === "DEL") {
       transportationMultiplier = 1;
     }
-
     const transportationAllowance = 350 * transportationMultiplier;
 
     let overnightAllowance = 0;
@@ -397,7 +472,7 @@ function calculateIncome() {
     }
 
     let extraAllowance = 0;
-    if (route === "PVG" && !hasLayover) {
+    if (route === "PVG" && !hasLayover && !isQuickturn) {
       extraAllowance = 1000;
     }
 
@@ -413,7 +488,8 @@ function calculateIncome() {
       deadheadPay;
 
     totalIncome += routeIncome;
-    totalBlockMinutes += operatedMin; // operating only
+    totalBlockMinutes += operatedMin;
+    totalFDPMinutes += routeFDPMinutes;
   }
 
   document.getElementById("incomeResult").textContent =
@@ -421,6 +497,9 @@ function calculateIncome() {
 
   document.getElementById("blockHoursResult").textContent =
     `Total Block Hours: ${formatHM(totalBlockMinutes)}`;
+
+  document.getElementById("fdpResult").textContent =
+    `Total FDP: ${formatHM(totalFDPMinutes)}`;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -441,4 +520,3 @@ function resetForm() {
   </div>
 </body>
 </html>
-
